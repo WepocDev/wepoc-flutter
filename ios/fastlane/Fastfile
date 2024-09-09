@@ -20,7 +20,7 @@ platform :ios do
   lane :beta do
     increment_build_number(
       xcodeproj: "Runner.xcodeproj",
-      build_number: latest_testflight_build_number + 1
+      build_number: latest_testflight_build_number.to_i + 1
     )
     re = /version:\s([0-9]*\.[0-9]*\.[0-9]*)\+[0-9]*/i
     config = File.read("../../pubspec.yaml")
