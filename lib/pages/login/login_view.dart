@@ -14,11 +14,7 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final homeserver = Matrix.of(context)
-        .getLoginClient()
-        .homeserver
-        .toString()
-        .replaceFirst('https://', '');
+    const homeserver = "Wepoc";
     final title = L10n.of(context)!.logInTo(homeserver);
     final titleParts = title.split(homeserver);
 
@@ -37,9 +33,9 @@ class LoginView extends StatelessWidget {
           TextSpan(
             children: [
               TextSpan(text: titleParts.first),
-              TextSpan(
+              const TextSpan(
                 text: homeserver,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
               TextSpan(text: titleParts.last),
             ],
@@ -53,7 +49,6 @@ class LoginView extends StatelessWidget {
             child: ListView(
               padding: const EdgeInsets.symmetric(horizontal: 8),
               children: <Widget>[
-                Image.asset('assets/banner_transparent.png'),
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
