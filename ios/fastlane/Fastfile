@@ -26,7 +26,11 @@ platform :ios do
     config = File.read("../../pubspec.yaml")
     version_name = config.match(re).captures[0]
     increment_version_number(version_number: version_name)
-    build_app(workspace: "Runner.xcworkspace", scheme: "Runner")
+    build_app(
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      export_options: { compileBitcode: false }
+    )
     upload_to_testflight(
       distribute_external: true,
       groups: "FluffyChat Betatest",
@@ -40,5 +44,5 @@ lane :release do
   sync_code_signing(type: "appstore")  # see code signing guide for more information
   build_app(scheme: "Runner")
   upload_to_app_store                  # upload your app to App Store Connect
-  slack(message: "Successfully uploaded a new App Store build")
+  # slack(message: "Successfully uploaded a new App Store build")
 end
