@@ -29,12 +29,12 @@ class HomeserverPickerView extends StatelessWidget {
     final regLink = publicHomeserver?.regLink;
     return LoginScaffold(
       enforceMobileMode: Matrix.of(context).client.isLogged(),
-      appBar: AppBar(
-        titleSpacing: 12,
-        automaticallyImplyLeading: false,
-        surfaceTintColor: Theme.of(context).colorScheme.surface,
-        title: HomeserverAppBar(controller: controller),
-      ),
+      // appBar: AppBar(
+      //   titleSpacing: 12,
+      //   automaticallyImplyLeading: false,
+      //   surfaceTintColor: Theme.of(context).colorScheme.surface,
+      //   title: HomeserverAppBar(controller: controller),
+      // ),
       body: Column(
         children: [
           // display a prominent banner to import session for TOR browser
@@ -63,7 +63,9 @@ class HomeserverPickerView extends StatelessWidget {
           Expanded(
             child: controller.isLoading
                 ? const Center(child: CircularProgressIndicator.adaptive())
-                : ListView(
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       if (errorText != null) ...[
                         const SizedBox(height: 12),
@@ -97,19 +99,7 @@ class HomeserverPickerView extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 36),
-                      ] else
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            top: 0.0,
-                            right: 8.0,
-                            left: 8.0,
-                            bottom: 16.0,
-                          ),
-                          child: Image.asset(
-                            'assets/banner_transparent.png',
-                          ),
-                        ),
-                      if (identityProviders != null) ...[
+                      ] else if (identityProviders != null) ...[
                         ...identityProviders.map(
                           (provider) => _LoginButton(
                             icon: provider.icon == null
