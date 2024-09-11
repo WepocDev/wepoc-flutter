@@ -59,12 +59,13 @@ abstract class AppRoutes {
           Matrix.of(context).client.isLogged() ? '/rooms' : '/onboarding',
     ),
     GoRoute(
-        path: '/onboarding',
-        pageBuilder: (context, state) => defaultPageBuilder(
-              context,
-              state,
-              const OnboardingView(),
-            )),
+      path: '/onboarding',
+      pageBuilder: (context, state) => defaultPageBuilder(
+        context,
+        state,
+        const OnBoardingView(),
+      ),
+    ),
     GoRoute(
       path: '/home',
       pageBuilder: (context, state) => defaultPageBuilder(
