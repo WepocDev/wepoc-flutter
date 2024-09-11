@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fluffychat/pages/onboarding/onboarding_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
@@ -47,7 +48,7 @@ abstract class AppRoutes {
     BuildContext context,
     GoRouterState state,
   ) =>
-      Matrix.of(context).client.isLogged() ? null : '/home';
+      Matrix.of(context).client.isLogged() ? null : '/onboarding';
 
   AppRoutes();
 
@@ -55,8 +56,15 @@ abstract class AppRoutes {
     GoRoute(
       path: '/',
       redirect: (context, state) =>
-          Matrix.of(context).client.isLogged() ? '/rooms' : '/home',
+          Matrix.of(context).client.isLogged() ? '/rooms' : '/onboarding',
     ),
+    GoRoute(
+        path: '/onboarding',
+        pageBuilder: (context, state) => defaultPageBuilder(
+              context,
+              state,
+              const OnboardingView(),
+            )),
     GoRoute(
       path: '/home',
       pageBuilder: (context, state) => defaultPageBuilder(
