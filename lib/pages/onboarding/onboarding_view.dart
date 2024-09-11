@@ -2,6 +2,7 @@ import 'package:fluffychat/pages/onboarding/onboarding_step_view.dart';
 import 'package:fluffychat/widgets/fluffy_chat_app.dart';
 import 'package:flutter/material.dart';
 import 'package:onboarding/onboarding.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class OnBoardingView extends StatefulWidget {
   const OnBoardingView({super.key});
@@ -16,6 +17,8 @@ class OnboardingViewState extends State<OnBoardingView> {
   // TODO: Get translations for this but client's focusing only in US
   @override
   Widget build(BuildContext context) {
+    final regLink = "https://web.wepoc.co/#/register";
+
     return Container(
       color: const Color(0xFF16181D),
       padding: const EdgeInsets.only(bottom: 28.0),
@@ -77,7 +80,7 @@ class OnboardingViewState extends State<OnBoardingView> {
           ),
           const SizedBox(height: 50.0),
           FilledButton(
-            onPressed: () => FluffyChatApp.router.go('/home/login'),
+            onPressed: () => launchUrlString("regLink"),
             child: Text("Create account"),
           ),
           const SizedBox(height: 10.0),
