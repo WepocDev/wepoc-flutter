@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fluffychat/pages/subscription/subscription.dart';
 import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
@@ -56,6 +57,11 @@ abstract class AppRoutes {
       path: '/',
       redirect: (context, state) =>
           Matrix.of(context).client.isLogged() ? '/rooms' : '/home',
+    ),
+    GoRoute(
+      path: '/subscription',
+      pageBuilder: (context, state) =>
+          defaultPageBuilder(context, state, const Subscription()),
     ),
     GoRoute(
       path: '/home',
