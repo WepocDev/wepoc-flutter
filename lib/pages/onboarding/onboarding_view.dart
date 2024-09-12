@@ -55,7 +55,7 @@ class OnboardingViewState extends State<OnBoardingView> {
                 slideDirection,
               ) =>
                   setState(() {
-                pageIndex++;
+                pageIndex = currentIndex;
               }),
             ),
           ),
