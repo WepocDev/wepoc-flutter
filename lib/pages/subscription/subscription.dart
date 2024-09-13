@@ -62,6 +62,7 @@ class SubscriptionOptionState extends State<SubscriptionOption> {
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Container(
+        constraints: const BoxConstraints(maxWidth: 420),
         padding: const EdgeInsets.only(
           left: 16.0,
           right: 16,
@@ -128,7 +129,8 @@ class SubscriptionPerks extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(left: 16.0),
-          child: SizedBox(
+          child: Container(
+            constraints: const BoxConstraints(maxWidth: 450),
             height: 200,
             child: ListView.separated(
               itemCount: perks.length,
@@ -159,6 +161,7 @@ class SubscriptionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      constraints: const BoxConstraints(maxWidth: 480),
       margin: const EdgeInsets.only(bottom: 8.0),
       alignment: Alignment.topLeft,
       child: Padding(
@@ -191,11 +194,16 @@ class SubscriptionBannerImage extends StatelessWidget {
           child: ClipRect(
             child: Align(
               alignment: Alignment.topCenter,
-              child: Image(
-                width: MediaQuery.of(context).size.width,
-                height: containerHeight,
-                fit: BoxFit.cover,
-                image: const AssetImage('assets/sub-temp.jpeg'),
+              child: OverflowBox(
+                maxWidth: double.infinity,
+                maxHeight: double.infinity,
+                child: Image(
+                  width: MediaQuery.of(context).size.width *
+                      1.1, // Increase width to overflow
+                  height: containerHeight * 1.1, // Increase height to overflow
+                  fit: BoxFit.cover,
+                  image: const AssetImage('assets/sub-temp.jpg'),
+                ),
               ),
             ),
           ),
