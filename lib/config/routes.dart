@@ -59,7 +59,7 @@ abstract class AppRoutes {
           Matrix.of(context).client.isLogged() ? '/rooms' : '/home',
     ),
     GoRoute(
-      path: '/subscription',
+      path: '/subscribe',
       pageBuilder: (context, state) =>
           defaultPageBuilder(context, state, const Subscription()),
     ),
