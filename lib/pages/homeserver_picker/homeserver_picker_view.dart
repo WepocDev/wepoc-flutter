@@ -26,7 +26,7 @@ class HomeserverPickerView extends StatelessWidget {
           homeserver.name ==
           controller.homeserverController.text.trim().toLowerCase(),
     );
-    final regLink = publicHomeserver?.regLink;
+    final regLink = "https://web.wepoc.co/#/register";
     return LoginScaffold(
       enforceMobileMode: Matrix.of(context).client.isLogged(),
       // appBar: AppBar(
