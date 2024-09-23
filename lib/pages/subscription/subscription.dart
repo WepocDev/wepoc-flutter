@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'package:flutter/rendering.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:fluffychat/config/themes.dart';
 
 final perks = [
@@ -17,8 +18,51 @@ final perks = [
   },
 ];
 
-class Subscription extends StatelessWidget {
+class Subscription extends StatefulWidget {
   const Subscription({super.key});
+
+  @override
+  _SubscriptionState createState() => _SubscriptionState();
+}
+
+class _SubscriptionState extends State<Subscription> {
+  List<Package> availablePackages = [];
+  int? selectedIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchOffers();
+  }
+
+  Future<void> _fetchOffers() async {
+    try {
+      final offerings = await Purchases.getOfferings();
+      if (offerings.current != null) {
+        setState(() {
+          availablePackages = offerings.current!.availablePackages;
+        });
+      }
+    } catch (e) {
+      print("Error fetching offers: $e");
+    }
+  }
+
+  Future<void> _purchaseSelectedPackage() async {
+    if (selectedIndex != null) {
+      try {
+        final selectedPackage = availablePackages[selectedIndex!];
+        final customerInfo = await Purchases.purchasePackage(selectedPackage);
+
+        print("Purchase successful: ${customerInfo.entitlements.active}");
+      } catch (e) {
+        // Manejo de errores
+        print("Error purchasing package: $e");
+      }
+    } else {
+      print("No package selected");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,23 +83,41 @@ class Subscription extends StatelessWidget {
               ],
             ),
           ),
-          const SubscriptionOption(),
-          const ActionButton(),
+          Expanded(
+            child: ListView.builder(
+              itemCount: availablePackages.length,
+              itemBuilder: (context, index) {
+                Package package = availablePackages[index];
+                return SubscriptionOption(
+                  package: package,
+                  isChecked: selectedIndex == index,
+                  onCheckedChanged: (bool value) {
+                    setState(() {
+                      selectedIndex = value ? index : null;
+                    });
+                  },
+                );
+              },
+            ),
+          ),
+          ActionButton(onPressed: _purchaseSelectedPackage)
         ],
       ),
     );
   }
 }
 
-class SubscriptionOption extends StatefulWidget {
-  const SubscriptionOption({super.key});
+class SubscriptionOption extends StatelessWidget {
+  final Package package;
+  final bool isChecked;
+  final ValueChanged<bool> onCheckedChanged;
 
-  @override
-  SubscriptionOptionState createState() => SubscriptionOptionState();
-}
-
-class SubscriptionOptionState extends State<SubscriptionOption> {
-  bool _isChecked = false;
+  const SubscriptionOption({
+    super.key,
+    required this.package,
+    required this.isChecked,
+    required this.onCheckedChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -84,31 +146,36 @@ class SubscriptionOptionState extends State<SubscriptionOption> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Column(
+            Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Yearly Subscription',
-                  style: TextStyle(
+                  package.storeProduct.title,
+                  style: const TextStyle(
                     fontSize: 18.0,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 Text(
-                  'R 2,999',
-                  style: TextStyle(
+                  package.storeProduct.priceString,
+                  style: const TextStyle(
                     fontSize: 16.0,
+                    color: Colors.grey,
+                  ),
+                ),
+                Text(
+                  package.storeProduct.description,
+                  style: const TextStyle(
+                    fontSize: 14.0,
                     color: Colors.grey,
                   ),
                 ),
               ],
             ),
             Checkbox(
-              value: _isChecked,
-              onChanged: (bool? value) {
-                setState(() {
-                  _isChecked = value ?? false;
-                });
+              value: isChecked,
+              onChanged: (bool? newValue) {
+                onCheckedChanged(newValue ?? false);
               },
             ),
           ],
@@ -198,9 +265,8 @@ class SubscriptionBannerImage extends StatelessWidget {
                 maxWidth: double.infinity,
                 maxHeight: double.infinity,
                 child: Image(
-                  width: MediaQuery.of(context).size.width *
-                      1.1, // Increase width to overflow
-                  height: containerHeight * 1.1, // Increase height to overflow
+                  width: MediaQuery.of(context).size.width * 1.1,
+                  height: containerHeight * 1.1,
                   fit: BoxFit.cover,
                   image: const AssetImage('assets/sub-temp.jpg'),
                 ),
@@ -214,7 +280,12 @@ class SubscriptionBannerImage extends StatelessWidget {
 }
 
 class ActionButton extends StatelessWidget {
-  const ActionButton({super.key});
+  final void Function() onPressed;
+
+  const ActionButton({
+    super.key,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -233,12 +304,7 @@ class ActionButton extends StatelessWidget {
           height: 50.0,
           child: TextButton(
             style: elevatedButtonTheme,
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) => const CustomAlertDialog(),
-              );
-            },
+            onPressed: onPressed,
             child: const Text('Continue'),
           ),
         ),

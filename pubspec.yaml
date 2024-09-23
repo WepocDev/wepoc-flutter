@@ -75,6 +75,7 @@ dependencies:
   pretty_qr_code: ^3.2.1
   provider: ^6.0.2
   punycode: ^1.0.0
+  purchases_flutter: ^6.0.0
   qr_code_scanner: ^1.0.1
   receive_sharing_intent: 1.4.5 # Update needs more work
   record: ^5.1.2
