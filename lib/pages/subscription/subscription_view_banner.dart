@@ -12,7 +12,7 @@ class SubscriptionBannerImage extends StatelessWidget {
         final containerHeight = constraints.maxWidth > 600 ? 400 : 300;
         return SizedBox(
           width: MediaQuery.of(context).size.width,
-          height: containerHeight as double,
+          height: double.parse(containerHeight.toString()),
           child: ClipRect(
             child: Align(
               alignment: Alignment.topCenter,

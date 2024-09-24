@@ -30,42 +30,51 @@ class SubscriptionListItem extends StatelessWidget {
           border: Border.all(
             color: Colors.grey,
           ),
-          boxShadow: const [
-            BoxShadow(
-              color: Colors.black26,
-              offset: Offset(0, 2),
-            ),
-          ],
+          boxShadow: isChecked
+              ? [
+                  BoxShadow(
+                    color:
+                        Theme.of(context).colorScheme.secondary.withAlpha(0x30),
+                  ),
+                ]
+              : null,
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Yearly Subscription',
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
+        child: InkWell(
+          onTap: () {
+            onCheckedChanged(!isChecked); // Toggle checkbox state when tapped
+          },
+          borderRadius: BorderRadius.circular(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Yearly Subscription',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                ),
-                Text(
-                  'R 2,999',
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    color: Colors.grey,
+                  Text(
+                    'R 2,999',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.grey,
+                    ),
                   ),
-                ),
-              ],
-            ),
-            Checkbox(
-              value: isChecked,
-              onChanged: (bool? value) {
-                onCheckedChanged(value ?? false);
-              },
-            ),
-          ],
+                ],
+              ),
+              Checkbox(
+                value: isChecked,
+                onChanged: (bool? value) {
+                  onCheckedChanged(
+                      value ?? false); // Update checkbox when tapped directly
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );

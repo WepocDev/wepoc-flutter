@@ -30,6 +30,7 @@ class SubscriptionPerks extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 450),
             height: 200,
             child: ListView.separated(
+              physics: const NeverScrollableScrollPhysics(),
               itemCount: perks.length,
               separatorBuilder: (context, index) {
                 return const SizedBox(
