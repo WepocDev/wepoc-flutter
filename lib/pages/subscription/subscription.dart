@@ -45,7 +45,7 @@ class _SubscriptionState extends State<Subscription> {
         final customerInfo = await Purchases.purchasePackage(selectedPackage);
 
         print("Purchase successful: ${customerInfo.entitlements.active}");
-        context.push('/rooms');
+        context.pop();
       } catch (e) {
         // Manejo de errores
         print("Error purchasing package: $e");
