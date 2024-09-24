@@ -7,6 +7,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:matrix/matrix.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:fluffychat/config/app_config.dart';
 import 'package:fluffychat/utils/client_manager.dart';
@@ -18,6 +19,7 @@ import 'widgets/fluffy_chat_app.dart';
 
 void main() async {
   Logs().i('Welcome to ${AppConfig.applicationName} <3');
+  await dotenv.load(fileName: ".env");
 
   // Our background push shared isolate accesses flutter-internal things very early in the startup proccess
   // To make sure that the parts of flutter needed are started up already, we need to ensure that the
@@ -29,13 +31,14 @@ void main() async {
 
   PurchasesConfiguration? configuration;
   if (Platform.isAndroid) {
-    configuration =
-        PurchasesConfiguration('ANDROID_API_KEY'); // NEED ANDROID API KEY
+    configuration = PurchasesConfiguration(
+        dotenv.env['REVENUE_CAT_IOS_KEY']!); // NEED ANDROID API KEY
   } else if (Platform.isIOS) {
-    configuration = PurchasesConfiguration('appl_DVlKGkWavaygyKCewhndTvdiOTy');
+    configuration = PurchasesConfiguration(dotenv.env['REVENUE_CAT_IOS_KEY']!);
   }
 
   if (configuration != null) {
+    configuration.usesStoreKit2IfAvailable = false;
     await Purchases.configure(configuration);
   }
 

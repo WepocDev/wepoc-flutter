@@ -55,13 +55,10 @@ abstract class AppRoutes {
 
   static final List<RouteBase> routes = [
     GoRoute(
-        path: '/',
-        redirect: (context, state) {
-          const isSubscribed = false;
-          if (!Matrix.of(context).client.isLogged()) return '/onboarding';
-          if (!isSubscribed) return '/subscribe';
-          return '/rooms';
-        }),
+      path: '/',
+      redirect: (context, state) =>
+          Matrix.of(context).client.isLogged() ? '/rooms' : '/home',
+    ),
     GoRoute(
       path: '/onboarding',
       pageBuilder: (context, state) => defaultPageBuilder(

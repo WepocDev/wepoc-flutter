@@ -37,10 +37,11 @@ class _SubscriptionState extends State<Subscription> {
     }
   }
 
-  Future<void> _purchaseSelectedPackage(BuildContext context) async {
+  Future<void> _purchaseSelectedPackage() async {
     if (selectedIndex != null) {
       try {
         final selectedPackage = availablePackages[selectedIndex!];
+        print('Purchasing $selectedPackage');
         final customerInfo = await Purchases.purchasePackage(selectedPackage);
 
         print("Purchase successful: ${customerInfo.entitlements.active}");
@@ -96,7 +97,7 @@ class _SubscriptionState extends State<Subscription> {
           ),
           ActionButton(
             onPressed: () {
-              _purchaseSelectedPackage(context);
+              _purchaseSelectedPackage();
             },
             disabled: selectedIndex == null,
           )
