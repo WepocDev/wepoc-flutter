@@ -47,19 +47,20 @@ class SubscriptionListItem extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Column(
+              Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Yearly Subscription',
-                    style: TextStyle(
+                    package.storeProduct.title,
+                    style: const TextStyle(
                       fontSize: 18.0,
                       fontWeight: FontWeight.bold,
+                      color: Colors.white,
                     ),
                   ),
                   Text(
-                    'R 2,999',
-                    style: TextStyle(
+                    package.storeProduct.priceString,
+                    style: const TextStyle(
                       fontSize: 16.0,
                       color: Colors.grey,
                     ),

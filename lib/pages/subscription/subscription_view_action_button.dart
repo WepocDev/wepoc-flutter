@@ -21,20 +21,17 @@ class ActionButton extends StatelessWidget {
         height: 50.0,
         child: TextButton(
           style: TextButton.styleFrom(
-            backgroundColor: disabled
-                ? Theme.of(context)
-                    .disabledColor // Set the background color when disabled
-                : Theme.of(context)
-                    .colorScheme
-                    .primary, // Normal background color
-            foregroundColor: disabled
-                ? Colors.grey // Set text color when disabled
-                : Colors.white, // Normal text color
-          ),
+              backgroundColor: disabled
+                  ? Theme.of(context)
+                      .disabledColor // Set the background color when disabled
+                  : Color(0xff16987A)),
           onPressed: disabled
               ? null
               : onPressed, // Disable button if 'disabled' is true
-          child: const Text('Continue'),
+          child: const Text(
+            'Continue',
+            style: TextStyle(color: Colors.white),
+          ),
         ),
       ),
     );
