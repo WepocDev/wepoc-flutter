@@ -23,6 +23,7 @@ import 'package:fluffychat/utils/matrix_sdk_extensions/matrix_locals.dart';
 import 'package:fluffychat/utils/platform_infos.dart';
 import 'package:fluffychat/utils/show_update_snackbar.dart';
 import 'package:fluffychat/widgets/avatar.dart';
+import 'package:fluffychat/pages/subscription/suscription_status.dart';
 import '../../../utils/account_bundles.dart';
 import '../../config/setting_keys.dart';
 import '../../utils/matrix_sdk_extensions/matrix_file_extension.dart';
@@ -523,7 +524,34 @@ class ChatListController extends State<ChatList>
 
     _checkTorBrowser();
 
+    checkSubscriptionStatus().then((bool isSubscribed) {
+      print('Subscription status $isSubscribed');
+      if (!isSubscribed) {
+        _showSubscriptionDialog(context);
+      }
+    });
     super.initState();
+  }
+
+  void _showSubscriptionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext _ctx) {
+        return AlertDialog(
+          title: const Text("Subscription Required"),
+          content: const Text("You need to subscribe to access this feature."),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Subscribe"),
+              onPressed: () {
+                Navigator.of(_ctx).pop(); // Close the dialog
+                context.push('/subscribe');
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
