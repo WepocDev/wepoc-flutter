@@ -26,21 +26,23 @@ void main() async {
   // widget bindings are initialized already.
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Set up RC
-  await Purchases.setDebugLogsEnabled(true);
+  try {
+    PurchasesConfiguration? configuration;
+    if (Platform.isAndroid) {
+      configuration = PurchasesConfiguration(
+          dotenv.env['REVENUE_CAT_IOS_KEY']!); // NEED ANDROID API KEY
+    } else if (Platform.isIOS) {
+      configuration =
+          PurchasesConfiguration(dotenv.env['REVENUE_CAT_IOS_KEY']!);
+    }
 
-  PurchasesConfiguration? configuration;
-  if (Platform.isAndroid) {
-    configuration = PurchasesConfiguration(
-        dotenv.env['REVENUE_CAT_IOS_KEY']!); // NEED ANDROID API KEY
-  } else if (Platform.isIOS) {
-    configuration = PurchasesConfiguration(dotenv.env['REVENUE_CAT_IOS_KEY']!);
-  }
-
-  if (configuration != null) {
-    configuration.usesStoreKit2IfAvailable = false;
-    await Purchases.configure(configuration);
-  }
+    if (configuration != null) {
+      await Purchases.setDebugLogsEnabled(true);
+      configuration.usesStoreKit2IfAvailable = false;
+      await Purchases.configure(configuration);
+    }
+    // ignore: empty_catches
+  } catch (error) {}
 
   Logs().nativeColors = !PlatformInfos.isIOS;
   final store = await SharedPreferences.getInstance();
