@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fluffychat/pages/landing/landing_view.dart';
 import 'package:fluffychat/pages/onboarding/onboarding_view.dart';
 import 'package:flutter/material.dart';
 
@@ -72,6 +73,10 @@ abstract class AppRoutes {
       pageBuilder: (context, state) =>
           defaultPageBuilder(context, state, const Subscription()),
     ),
+    GoRoute(
+        path: '/landing',
+        pageBuilder: (context, state) =>
+            defaultPageBuilder(context, state, const LandingView())),
     GoRoute(
       path: '/home',
       pageBuilder: (context, state) => defaultPageBuilder(
