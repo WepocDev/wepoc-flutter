@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import './landing_video_widget.dart';
+
+final API_URL = 'https://dolphin-app-n69d4.ondigitalocean.app';
 
 class LandingView extends StatelessWidget {
   const LandingView({super.key});
@@ -11,7 +14,7 @@ class LandingView extends StatelessWidget {
 
     final request = http.Request(
       'GET',
-      Uri.parse('https://dolphin-app-n69d4.ondigitalocean.app/api/videos'),
+      Uri.parse('$API_URL/api/videos?populate=*'),
     );
 
     request.headers.addAll({
@@ -64,8 +67,8 @@ class LandingView extends StatelessWidget {
                   final video = videos[index];
                   return VideoPlaceholder(
                     title: video.title,
-                    imageUrl:
-                        'https://placehold.co/300x500?text=${video.title}', // Placeholder de prueba
+                    imageUrl: video.thumbnailUrl,
+                    videoUrl: video.videoUrl,
                   );
                 },
               );
@@ -83,6 +86,8 @@ class Video {
   final String title;
   final String description;
   final DateTime createdAt;
+  final String videoUrl;
+  final String thumbnailUrl;
 
   Video({
     required this.id,
@@ -90,49 +95,30 @@ class Video {
     required this.title,
     required this.description,
     required this.createdAt,
+    required this.videoUrl,
+    required this.thumbnailUrl,
   });
 
   factory Video.fromJson(Map<String, dynamic> json) {
+    final videoUrl = json['Video']?['url'] ?? '';
+    final thumbnailUrl = json['Thumbnail']?['formats']?['medium']?['url'] ??
+        json['Thumbnail']?['url'] ??
+        '';
+
+    final resolvedVideoUrl =
+        videoUrl.startsWith('http') ? videoUrl : '$API_URL$videoUrl';
+    final resolvedThumbnailUrl = thumbnailUrl.startsWith('http')
+        ? thumbnailUrl
+        : '$API_URL$thumbnailUrl';
+
     return Video(
       id: json['id'] as int,
       documentId: json['documentId'] as String,
       title: json['Title'] as String,
       description: json['Description'] as String,
       createdAt: DateTime.parse(json['createdAt'] as String),
-    );
-  }
-}
-
-class VideoPlaceholder extends StatelessWidget {
-  final String title;
-  final String imageUrl;
-
-  const VideoPlaceholder({
-    required this.title,
-    required this.imageUrl,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Expanded(
-          child: Image.network(
-            imageUrl,
-            fit: BoxFit.cover,
-            errorBuilder: (context, error, stackTrace) =>
-                const Icon(Icons.broken_image),
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-        ),
-      ],
+      videoUrl: resolvedVideoUrl,
+      thumbnailUrl: resolvedThumbnailUrl,
     );
   }
 }
