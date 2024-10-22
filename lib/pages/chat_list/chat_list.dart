@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_shortcuts/flutter_shortcuts.dart';
-import 'package:future_loading_dialog/future_loading_dialog.dart';
 import 'package:go_router/go_router.dart';
 import 'package:matrix/matrix.dart' as sdk;
 import 'package:matrix/matrix.dart';
@@ -23,6 +23,7 @@ import 'package:fluffychat/utils/matrix_sdk_extensions/matrix_locals.dart';
 import 'package:fluffychat/utils/platform_infos.dart';
 import 'package:fluffychat/utils/show_update_snackbar.dart';
 import 'package:fluffychat/widgets/avatar.dart';
+import 'package:fluffychat/widgets/future_loading_dialog.dart';
 import '../../../utils/account_bundles.dart';
 import '../../config/setting_keys.dart';
 import '../../utils/matrix_sdk_extensions/matrix_file_extension.dart';
@@ -61,15 +62,15 @@ extension LocalizedActiveFilter on ActiveFilter {
   String toLocalizedString(BuildContext context) {
     switch (this) {
       case ActiveFilter.allChats:
-        return L10n.of(context)!.all;
+        return L10n.of(context).all;
       case ActiveFilter.messages:
-        return L10n.of(context)!.messages;
+        return L10n.of(context).messages;
       case ActiveFilter.unread:
-        return L10n.of(context)!.unread;
+        return L10n.of(context).unread;
       case ActiveFilter.groups:
-        return L10n.of(context)!.groups;
+        return L10n.of(context).groups;
       case ActiveFilter.spaces:
-        return L10n.of(context)!.spaces;
+        return L10n.of(context).spaces;
     }
   }
 }
@@ -127,25 +128,25 @@ class ChatListController extends State<ChatList>
       final inviteAction = await showModalActionSheet<InviteActions>(
         context: context,
         message: room.isDirectChat
-            ? L10n.of(context)!.invitePrivateChat
-            : L10n.of(context)!.inviteGroupChat,
-        title: room.getLocalizedDisplayname(MatrixLocals(L10n.of(context)!)),
+            ? L10n.of(context).invitePrivateChat
+            : L10n.of(context).inviteGroupChat,
+        title: room.getLocalizedDisplayname(MatrixLocals(L10n.of(context))),
         actions: [
           SheetAction(
             key: InviteActions.accept,
-            label: L10n.of(context)!.accept,
+            label: L10n.of(context).accept,
             icon: Icons.check_outlined,
             isDefaultAction: true,
           ),
           SheetAction(
             key: InviteActions.decline,
-            label: L10n.of(context)!.decline,
+            label: L10n.of(context).decline,
             icon: Icons.close_outlined,
             isDestructiveAction: true,
           ),
           SheetAction(
             key: InviteActions.block,
-            label: L10n.of(context)!.block,
+            label: L10n.of(context).block,
             icon: Icons.block_outlined,
             isDestructiveAction: true,
           ),
@@ -180,7 +181,7 @@ class ChatListController extends State<ChatList>
     if (room.membership == Membership.ban) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(L10n.of(context)!.youHaveBeenBannedFromThisChat),
+          content: Text(L10n.of(context).youHaveBeenBannedFromThisChat),
         ),
       );
       return;
@@ -205,20 +206,27 @@ class ChatListController extends State<ChatList>
           context: context,
           useRootNavigator: false,
           builder: (c) => SendFileDialog(
-            files: [shareFile],
+            files: [
+              XFile.fromData(
+                shareFile.bytes,
+                name: shareFile.name,
+                mimeType: shareFile.mimeType,
+              ),
+            ],
             room: room,
+            outerContext: context,
           ),
         );
         Matrix.of(context).shareContent = null;
       } else {
         final consent = await showOkCancelAlertDialog(
           context: context,
-          title: L10n.of(context)!.forward,
-          message: L10n.of(context)!.forwardMessageTo(
-            room.getLocalizedDisplayname(MatrixLocals(L10n.of(context)!)),
+          title: L10n.of(context).forward,
+          message: L10n.of(context).forwardMessageTo(
+            room.getLocalizedDisplayname(MatrixLocals(L10n.of(context))),
           ),
-          okLabel: L10n.of(context)!.forward,
-          cancelLabel: L10n.of(context)!.cancel,
+          okLabel: L10n.of(context).forward,
+          cancelLabel: L10n.of(context).cancel,
         );
         if (consent == OkCancelResult.cancel) {
           Matrix.of(context).shareContent = null;
@@ -268,10 +276,10 @@ class ChatListController extends State<ChatList>
   void setServer() async {
     final newServer = await showTextInputDialog(
       useRootNavigator: false,
-      title: L10n.of(context)!.changeTheHomeserver,
+      title: L10n.of(context).changeTheHomeserver,
       context: context,
-      okLabel: L10n.of(context)!.ok,
-      cancelLabel: L10n.of(context)!.cancel,
+      okLabel: L10n.of(context).ok,
+      cancelLabel: L10n.of(context).cancel,
       textFields: [
         DialogTextField(
           prefixText: 'https://',
@@ -281,7 +289,7 @@ class ChatListController extends State<ChatList>
           autocorrect: false,
           validator: (server) => server?.contains('.') == true
               ? null
-              : L10n.of(context)!.invalidServerName,
+              : L10n.of(context).invalidServerName,
         ),
       ],
     );
@@ -561,7 +569,16 @@ class ChatListController extends State<ChatList>
     );
 
     final displayname =
-        room.getLocalizedDisplayname(MatrixLocals(L10n.of(context)!));
+        room.getLocalizedDisplayname(MatrixLocals(L10n.of(context)));
+
+    final spacesWithPowerLevels = room.client.rooms
+        .where(
+          (space) =>
+              space.isSpace &&
+              space.canChangeStateEvent(EventTypes.SpaceChild) &&
+              !space.spaceChildren.any((c) => c.roomId == room.id),
+        )
+        .toList();
 
     final action = await showMenu<ChatContextAction>(
       context: posContext,
@@ -601,8 +618,7 @@ class ChatListController extends State<ChatList>
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    L10n.of(context)!
-                        .goToSpace(space.getLocalizedDisplayname()),
+                    L10n.of(context).goToSpace(space.getLocalizedDisplayname()),
                   ),
                 ),
               ],
@@ -621,8 +637,8 @@ class ChatListController extends State<ChatList>
               const SizedBox(width: 12),
               Text(
                 room.pushRuleState == PushRuleState.notify
-                    ? L10n.of(context)!.muteChat
-                    : L10n.of(context)!.unmuteChat,
+                    ? L10n.of(context).muteChat
+                    : L10n.of(context).unmuteChat,
               ),
             ],
           ),
@@ -640,8 +656,8 @@ class ChatListController extends State<ChatList>
               const SizedBox(width: 12),
               Text(
                 room.markedUnread
-                    ? L10n.of(context)!.markAsRead
-                    : L10n.of(context)!.markAsUnread,
+                    ? L10n.of(context).markAsRead
+                    : L10n.of(context).markAsUnread,
               ),
             ],
           ),
@@ -655,12 +671,24 @@ class ChatListController extends State<ChatList>
               const SizedBox(width: 12),
               Text(
                 room.isFavourite
-                    ? L10n.of(context)!.unpin
-                    : L10n.of(context)!.pin,
+                    ? L10n.of(context).unpin
+                    : L10n.of(context).pin,
               ),
             ],
           ),
         ),
+        if (spacesWithPowerLevels.isNotEmpty)
+          PopupMenuItem(
+            value: ChatContextAction.addToSpace,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.group_work_outlined),
+                const SizedBox(width: 12),
+                Text(L10n.of(context).addToSpace),
+              ],
+            ),
+          ),
         PopupMenuItem(
           value: ChatContextAction.leave,
           child: Row(
@@ -668,7 +696,7 @@ class ChatListController extends State<ChatList>
             children: [
               const Icon(Icons.delete_outlined),
               const SizedBox(width: 12),
-              Text(L10n.of(context)!.leave),
+              Text(L10n.of(context).leave),
             ],
           ),
         ),
@@ -711,10 +739,10 @@ class ChatListController extends State<ChatList>
         final confirmed = await showOkCancelAlertDialog(
           useRootNavigator: false,
           context: context,
-          title: L10n.of(context)!.areYouSure,
-          okLabel: L10n.of(context)!.leave,
-          cancelLabel: L10n.of(context)!.no,
-          message: L10n.of(context)!.archiveRoomDescription,
+          title: L10n.of(context).areYouSure,
+          okLabel: L10n.of(context).leave,
+          cancelLabel: L10n.of(context).no,
+          message: L10n.of(context).archiveRoomDescription,
           isDestructiveAction: true,
         );
         if (confirmed == OkCancelResult.cancel) return;
@@ -723,12 +751,31 @@ class ChatListController extends State<ChatList>
         await showFutureLoadingDialog(context: context, future: room.leave);
 
         return;
+      case ChatContextAction.addToSpace:
+        final space = await showConfirmationDialog(
+          context: context,
+          title: L10n.of(context).space,
+          actions: spacesWithPowerLevels
+              .map(
+                (space) => AlertDialogAction(
+                  key: space,
+                  label: space
+                      .getLocalizedDisplayname(MatrixLocals(L10n.of(context))),
+                ),
+              )
+              .toList(),
+        );
+        if (space == null) return;
+        await showFutureLoadingDialog(
+          context: context,
+          future: () => space.setSpaceChild(room.id),
+        );
     }
   }
 
   void dismissStatusList() async {
     final result = await showOkCancelAlertDialog(
-      title: L10n.of(context)!.hidePresences,
+      title: L10n.of(context).hidePresences,
       context: context,
     );
     if (result == OkCancelResult.ok) {
@@ -744,13 +791,13 @@ class ChatListController extends State<ChatList>
     final input = await showTextInputDialog(
       useRootNavigator: false,
       context: context,
-      title: L10n.of(context)!.setStatus,
-      message: L10n.of(context)!.leaveEmptyToClearStatus,
-      okLabel: L10n.of(context)!.ok,
-      cancelLabel: L10n.of(context)!.cancel,
+      title: L10n.of(context).setStatus,
+      message: L10n.of(context).leaveEmptyToClearStatus,
+      okLabel: L10n.of(context).ok,
+      cancelLabel: L10n.of(context).cancel,
       textFields: [
         DialogTextField(
-          hintText: L10n.of(context)!.statusExampleMessage,
+          hintText: L10n.of(context).statusExampleMessage,
           maxLines: 6,
           minLines: 1,
           maxLength: 255,
@@ -773,6 +820,7 @@ class ChatListController extends State<ChatList>
   bool waitForFirstSync = false;
 
   Future<void> _waitForFirstSync() async {
+    final router = GoRouter.of(context);
     final client = Matrix.of(context).client;
     await client.roomsLoading;
     await client.accountDataLoading;
@@ -793,6 +841,33 @@ class ChatListController extends State<ChatList>
     setState(() {
       waitForFirstSync = true;
     });
+
+    if (client.userDeviceKeys[client.userID!]?.deviceKeys.values
+            .any((device) => !device.verified && !device.blocked) ??
+        false) {
+      late final ScaffoldFeatureController controller;
+      final theme = Theme.of(context);
+      controller = ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 15),
+          backgroundColor: theme.colorScheme.errorContainer,
+          content: Text(
+            L10n.of(context).oneOfYourDevicesIsNotVerified,
+            style: TextStyle(
+              color: theme.colorScheme.onErrorContainer,
+            ),
+          ),
+          action: SnackBarAction(
+            onPressed: () {
+              controller.close();
+              router.go('/rooms/settings/devices');
+            },
+            textColor: theme.colorScheme.onErrorContainer,
+            label: L10n.of(context).settings,
+          ),
+        ),
+      );
+    }
   }
 
   void cancelAction() {
@@ -832,22 +907,22 @@ class ChatListController extends State<ChatList>
   }
 
   void editBundlesForAccount(String? userId, String? activeBundle) async {
-    final l10n = L10n.of(context)!;
+    final l10n = L10n.of(context);
     final client = Matrix.of(context)
         .widget
         .clients[Matrix.of(context).getClientIndexByMatrixId(userId!)];
     final action = await showConfirmationDialog<EditBundleAction>(
       context: context,
-      title: L10n.of(context)!.editBundlesForAccount,
+      title: L10n.of(context).editBundlesForAccount,
       actions: [
         AlertDialogAction(
           key: EditBundleAction.addToBundle,
-          label: L10n.of(context)!.addToBundle,
+          label: L10n.of(context).addToBundle,
         ),
         if (activeBundle != client.userID)
           AlertDialogAction(
             key: EditBundleAction.removeFromBundle,
-            label: L10n.of(context)!.removeFromBundle,
+            label: L10n.of(context).removeFromBundle,
           ),
       ],
     );
@@ -909,7 +984,7 @@ class ChatListController extends State<ChatList>
     isTorBrowser = isTor;
   }
 
-  Future<void> dehydrate() => Matrix.of(context).dehydrateAction();
+  Future<void> dehydrate() => Matrix.of(context).dehydrateAction(context);
 }
 
 enum EditBundleAction { addToBundle, removeFromBundle }
@@ -927,4 +1002,5 @@ enum ChatContextAction {
   markUnread,
   mute,
   leave,
+  addToSpace,
 }

@@ -96,6 +96,8 @@ class EventVideoPlayerState extends State<EventVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final hasThumbnail = widget.event.hasThumbnail;
     final blurHash = (widget.event.infoMap as Map<String, dynamic>)
             .tryGet<String>('xyz.amorgan.blurhash') ??
@@ -123,7 +125,7 @@ class EventVideoPlayerState extends State<EventVideoPlayer> {
                   Center(
                     child: IconButton(
                       style: IconButton.styleFrom(
-                        backgroundColor: Theme.of(context).colorScheme.surface,
+                        backgroundColor: theme.colorScheme.surface,
                       ),
                       icon: _isDownloading
                           ? const SizedBox(
@@ -135,8 +137,8 @@ class EventVideoPlayerState extends State<EventVideoPlayer> {
                             )
                           : const Icon(Icons.play_circle_outlined),
                       tooltip: _isDownloading
-                          ? L10n.of(context)!.loadingPleaseWait
-                          : L10n.of(context)!.videoWithSize(
+                          ? L10n.of(context).loadingPleaseWait
+                          : L10n.of(context).videoWithSize(
                               widget.event.sizeString ?? '?MB',
                             ),
                       onPressed: _isDownloading ? null : _downloadAction,

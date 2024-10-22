@@ -7,6 +7,7 @@ import 'package:matrix/matrix.dart';
 import 'package:fluffychat/config/app_config.dart';
 import 'package:fluffychat/pages/chat_list/chat_list.dart';
 import 'package:fluffychat/pages/chat_list/chat_list_item.dart';
+import 'package:fluffychat/pages/chat_list/dummy_chat_list_item.dart';
 import 'package:fluffychat/pages/chat_list/search_title.dart';
 import 'package:fluffychat/pages/chat_list/space_view.dart';
 import 'package:fluffychat/pages/chat_list/status_msg_list.dart';
@@ -28,6 +29,8 @@ class ChatListViewBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final client = Matrix.of(context).client;
     final activeSpace = controller.activeSpaceId;
     if (activeSpace != null) {
@@ -59,10 +62,6 @@ class ChatListViewBody extends StatelessWidget {
         .toList();
     final userSearchResult = controller.userSearchResult;
     const dummyChatCount = 4;
-    final titleColor =
-        Theme.of(context).textTheme.bodyLarge!.color!.withAlpha(100);
-    final subtitleColor =
-        Theme.of(context).textTheme.bodyLarge!.color!.withAlpha(50);
     final filter = controller.searchController.text.toLowerCase();
     return StreamBuilder(
       key: ValueKey(
@@ -84,17 +83,17 @@ class ChatListViewBody extends StatelessWidget {
                   [
                     if (controller.isSearchMode) ...[
                       SearchTitle(
-                        title: L10n.of(context)!.publicRooms,
+                        title: L10n.of(context).publicRooms,
                         icon: const Icon(Icons.explore_outlined),
                       ),
                       PublicRoomsHorizontalList(publicRooms: publicRooms),
                       SearchTitle(
-                        title: L10n.of(context)!.publicSpaces,
+                        title: L10n.of(context).publicSpaces,
                         icon: const Icon(Icons.workspaces_outlined),
                       ),
                       PublicRoomsHorizontalList(publicRooms: publicSpaces),
                       SearchTitle(
-                        title: L10n.of(context)!.users,
+                        title: L10n.of(context).users,
                         icon: const Icon(Icons.group_outlined),
                       ),
                       AnimatedContainer(
@@ -116,7 +115,7 @@ class ChatListViewBody extends StatelessWidget {
                                       userSearchResult.results[i].displayName ??
                                           userSearchResult
                                               .results[i].userId.localpart ??
-                                          L10n.of(context)!.unknownDevice,
+                                          L10n.of(context).unknownDevice,
                                   avatar: userSearchResult.results[i].avatarUrl,
                                   onPressed: () => showAdaptiveBottomSheet(
                                     context: context,
@@ -144,11 +143,11 @@ class ChatListViewBody extends StatelessWidget {
                       clipBehavior: Clip.hardEdge,
                       decoration: const BoxDecoration(),
                       child: Material(
-                        color: Theme.of(context).colorScheme.surface,
+                        color: theme.colorScheme.surface,
                         child: ListTile(
                           leading: const Icon(Icons.vpn_key),
-                          title: Text(L10n.of(context)!.dehydrateTor),
-                          subtitle: Text(L10n.of(context)!.dehydrateTorLong),
+                          title: Text(L10n.of(context).dehydrateTor),
+                          subtitle: Text(L10n.of(context).dehydrateTorLong),
                           trailing: const Icon(Icons.chevron_right_outlined),
                           onTap: controller.dehydrate,
                         ),
@@ -156,11 +155,11 @@ class ChatListViewBody extends StatelessWidget {
                     ),
                     if (client.rooms.isNotEmpty && !controller.isSearchMode)
                       SizedBox(
-                        height: 44,
+                        height: 64,
                         child: ListView(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 12.0,
-                            vertical: 6,
+                            vertical: 16.0,
                           ),
                           shrinkWrap: true,
                           scrollDirection: Axis.horizontal,
@@ -199,11 +198,8 @@ class ChatListViewBody extends StatelessWidget {
                                           decoration: BoxDecoration(
                                             color: filter ==
                                                     controller.activeFilter
-                                                ? Theme.of(context)
-                                                    .colorScheme
-                                                    .primary
-                                                : Theme.of(context)
-                                                    .colorScheme
+                                                ? theme.colorScheme.primary
+                                                : theme.colorScheme
                                                     .secondaryContainer,
                                             borderRadius: BorderRadius.circular(
                                               AppConfig.borderRadius,
@@ -219,11 +215,8 @@ class ChatListViewBody extends StatelessWidget {
                                                   : FontWeight.normal,
                                               color: filter ==
                                                       controller.activeFilter
-                                                  ? Theme.of(context)
-                                                      .colorScheme
-                                                      .onPrimary
-                                                  : Theme.of(context)
-                                                      .colorScheme
+                                                  ? theme.colorScheme.onPrimary
+                                                  : theme.colorScheme
                                                       .onSecondaryContainer,
                                             ),
                                           ),
@@ -238,19 +231,52 @@ class ChatListViewBody extends StatelessWidget {
                       ),
                     if (controller.isSearchMode)
                       SearchTitle(
-                        title: L10n.of(context)!.chats,
+                        title: L10n.of(context).chats,
                         icon: const Icon(Icons.forum_outlined),
                       ),
                     if (client.prevBatch != null &&
                         rooms.isEmpty &&
                         !controller.isSearchMode) ...[
-                      Padding(
-                        padding: const EdgeInsets.all(32.0),
-                        child: Icon(
-                          CupertinoIcons.chat_bubble_2,
-                          size: 128,
-                          color: Theme.of(context).colorScheme.secondary,
-                        ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              const Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  DummyChatListItem(
+                                    opacity: 0.5,
+                                    animate: false,
+                                  ),
+                                  DummyChatListItem(
+                                    opacity: 0.3,
+                                    animate: false,
+                                  ),
+                                ],
+                              ),
+                              Icon(
+                                CupertinoIcons.chat_bubble_text_fill,
+                                size: 128,
+                                color: theme.colorScheme.secondary,
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Text(
+                              client.rooms.isEmpty
+                                  ? L10n.of(context).noChatsFoundHere
+                                  : L10n.of(context).noMoreChatsFound,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 18,
+                                color: theme.colorScheme.secondary,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ],
@@ -259,56 +285,9 @@ class ChatListViewBody extends StatelessWidget {
               if (client.prevBatch == null)
                 SliverList(
                   delegate: SliverChildBuilderDelegate(
-                    (context, i) => Opacity(
+                    (context, i) => DummyChatListItem(
                       opacity: (dummyChatCount - i) / dummyChatCount,
-                      child: ListTile(
-                        leading: CircleAvatar(
-                          backgroundColor: titleColor,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 1,
-                            color: Theme.of(context).textTheme.bodyLarge!.color,
-                          ),
-                        ),
-                        title: Row(
-                          children: [
-                            Expanded(
-                              child: Container(
-                                height: 14,
-                                decoration: BoxDecoration(
-                                  color: titleColor,
-                                  borderRadius: BorderRadius.circular(3),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(width: 36),
-                            Container(
-                              height: 14,
-                              width: 14,
-                              decoration: BoxDecoration(
-                                color: subtitleColor,
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Container(
-                              height: 14,
-                              width: 14,
-                              decoration: BoxDecoration(
-                                color: subtitleColor,
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                            ),
-                          ],
-                        ),
-                        subtitle: Container(
-                          decoration: BoxDecoration(
-                            color: subtitleColor,
-                            borderRadius: BorderRadius.circular(3),
-                          ),
-                          height: 12,
-                          margin: const EdgeInsets.only(right: 22),
-                        ),
-                      ),
+                      animate: true,
                     ),
                     childCount: dummyChatCount,
                   ),
@@ -364,7 +343,7 @@ class PublicRoomsHorizontalList extends StatelessWidget {
               itemBuilder: (context, i) => _SearchItem(
                 title: publicRooms[i].name ??
                     publicRooms[i].canonicalAlias?.localpart ??
-                    L10n.of(context)!.group,
+                    L10n.of(context).group,
                 avatar: publicRooms[i].avatarUrl,
                 onPressed: () => showAdaptiveBottomSheet(
                   context: context,

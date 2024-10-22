@@ -15,6 +15,8 @@ class NewGroupView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final avatar = controller.avatar;
     final error = controller.error;
     return Scaffold(
@@ -24,7 +26,7 @@ class NewGroupView extends StatelessWidget {
             onPressed: controller.loading ? null : Navigator.of(context).pop,
           ),
         ),
-        title: Text(L10n.of(context)!.createGroup),
+        title: Text(L10n.of(context).createGroup),
       ),
       body: MaxWidthBody(
         child: Column(
@@ -59,14 +61,15 @@ class NewGroupView extends StatelessWidget {
                 readOnly: controller.loading,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.people_outlined),
-                  hintText: L10n.of(context)!.groupName,
+                  labelText: L10n.of(context).groupName,
                 ),
               ),
             ),
             const SizedBox(height: 16),
             SwitchListTile.adaptive(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 32),
               secondary: const Icon(Icons.public_outlined),
-              title: Text(L10n.of(context)!.groupIsPublic),
+              title: Text(L10n.of(context).groupIsPublic),
               value: controller.publicGroup,
               onChanged: controller.loading ? null : controller.setPublicGroup,
             ),
@@ -74,8 +77,10 @@ class NewGroupView extends StatelessWidget {
               duration: FluffyThemes.animationDuration,
               child: controller.publicGroup
                   ? SwitchListTile.adaptive(
+                      contentPadding:
+                          const EdgeInsets.symmetric(horizontal: 32),
                       secondary: const Icon(Icons.search_outlined),
-                      title: Text(L10n.of(context)!.groupCanBeFoundViaSearch),
+                      title: Text(L10n.of(context).groupCanBeFoundViaSearch),
                       value: controller.groupCanBeFound,
                       onChanged: controller.loading
                           ? null
@@ -84,14 +89,15 @@ class NewGroupView extends StatelessWidget {
                   : const SizedBox.shrink(),
             ),
             SwitchListTile.adaptive(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 32),
               secondary: Icon(
                 Icons.lock_outlined,
-                color: Theme.of(context).colorScheme.onSurface,
+                color: theme.colorScheme.onSurface,
               ),
               title: Text(
-                L10n.of(context)!.enableEncryption,
+                L10n.of(context).enableEncryption,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface,
+                  color: theme.colorScheme.onSurface,
                 ),
               ),
               value: !controller.publicGroup,
@@ -106,16 +112,7 @@ class NewGroupView extends StatelessWidget {
                       controller.loading ? null : controller.submitAction,
                   child: controller.loading
                       ? const LinearProgressIndicator()
-                      : Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                L10n.of(context)!.createGroupAndInviteUsers,
-                              ),
-                            ),
-                            Icon(Icons.adaptive.arrow_forward_outlined),
-                          ],
-                        ),
+                      : Text(L10n.of(context).createGroupAndInviteUsers),
                 ),
               ),
             ),
@@ -126,12 +123,12 @@ class NewGroupView extends StatelessWidget {
                   : ListTile(
                       leading: Icon(
                         Icons.warning_outlined,
-                        color: Theme.of(context).colorScheme.error,
+                        color: theme.colorScheme.error,
                       ),
                       title: Text(
                         error.toLocalizedString(context),
                         style: TextStyle(
-                          color: Theme.of(context).colorScheme.error,
+                          color: theme.colorScheme.error,
                         ),
                       ),
                     ),

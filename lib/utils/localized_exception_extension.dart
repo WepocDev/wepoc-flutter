@@ -1,36 +1,54 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
 import 'package:flutter_gen/gen_l10n/l10n.dart';
+import 'package:http/http.dart';
 import 'package:matrix/encryption.dart';
 import 'package:matrix/matrix.dart';
 
 import 'uia_request_manager.dart';
 
 extension LocalizedExceptionExtension on Object {
+  static String _formatFileSize(int size) {
+    if (size < 1024) return '$size B';
+    final i = (log(size) / log(1024)).floor();
+    final num = (size / pow(1024, i));
+    final round = num.round();
+    final numString = round < 10
+        ? num.toStringAsFixed(2)
+        : round < 100
+            ? num.toStringAsFixed(1)
+            : round.toString();
+    return '$numString ${'kMGTPEZY'[i - 1]}B';
+  }
+
   String toLocalizedString(
     BuildContext context, [
     ExceptionContext? exceptionContext,
   ]) {
+    if (this is FileTooBigMatrixException) {
+      final exception = this as FileTooBigMatrixException;
+      return L10n.of(context).fileIsTooBigForServer(
+        _formatFileSize(exception.maxFileSize),
+      );
+    }
     if (this is MatrixException) {
       switch ((this as MatrixException).error) {
         case MatrixError.M_FORBIDDEN:
           if (exceptionContext == ExceptionContext.changePassword) {
-            return L10n.of(context)!.passwordIsWrong;
+            return L10n.of(context).passwordIsWrong;
           }
-          return L10n.of(context)!.noPermission;
+          return L10n.of(context).noPermission;
         case MatrixError.M_LIMIT_EXCEEDED:
-          return L10n.of(context)!.tooManyRequestsWarning;
+          return L10n.of(context).tooManyRequestsWarning;
         default:
           return (this as MatrixException).errorMessage;
       }
     }
     if (this is InvalidPassphraseException) {
-      return L10n.of(context)!.wrongRecoveryKey;
-    }
-    if (this is FileTooBigMatrixException) {
-      return L10n.of(context)!.fileIsTooBigForServer;
+      return L10n.of(context).wrongRecoveryKey;
     }
     if (this is BadServerVersionsException) {
       final serverVersions = (this as BadServerVersionsException)
@@ -43,7 +61,7 @@ extension LocalizedExceptionExtension on Object {
           .toString()
           .replaceAll('{', '"')
           .replaceAll('}', '"');
-      return L10n.of(context)!.badServerVersionsException(
+      return L10n.of(context).badServerVersionsException(
         serverVersions,
         supportedVersions,
         serverVersions,
@@ -61,7 +79,7 @@ extension LocalizedExceptionExtension on Object {
           .toString()
           .replaceAll('{', '"')
           .replaceAll('}', '"');
-      return L10n.of(context)!.badServerLoginTypesException(
+      return L10n.of(context).badServerLoginTypesException(
         serverVersions,
         supportedVersions,
         supportedVersions,
@@ -69,16 +87,22 @@ extension LocalizedExceptionExtension on Object {
     }
     if (this is IOException ||
         this is SocketException ||
-        this is SyncConnectionException) {
-      return L10n.of(context)!.noConnectionToTheServer;
+        this is SyncConnectionException ||
+        this is ClientException) {
+      return L10n.of(context).noConnectionToTheServer;
+    }
+    if (this is FormatException &&
+        exceptionContext == ExceptionContext.checkHomeserver) {
+      return L10n.of(context).doesNotSeemToBeAValidHomeserver;
     }
     if (this is String) return toString();
     if (this is UiaException) return toString();
     Logs().w('Something went wrong: ', this);
-    return L10n.of(context)!.oopsSomethingWentWrong;
+    return L10n.of(context).oopsSomethingWentWrong;
   }
 }
 
 enum ExceptionContext {
   changePassword,
+  checkHomeserver,
 }

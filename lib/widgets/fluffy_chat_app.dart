@@ -34,7 +34,10 @@ class FluffyChatApp extends StatelessWidget {
 
   // Router must be outside of build method so that hot reload does not reset
   // the current path.
-  static final GoRouter router = GoRouter(routes: AppRoutes.routes);
+  static final GoRouter router = GoRouter(
+    routes: AppRoutes.routes,
+    debugLogDiagnostics: true,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -54,14 +57,10 @@ class FluffyChatApp extends StatelessWidget {
           clients: clients,
           // Need a navigator above the Matrix widget for
           // displaying dialogs
-          child: Navigator(
-            onGenerateRoute: (_) => MaterialPageRoute(
-              builder: (_) => Matrix(
-                clients: clients,
-                store: store,
-                child: testWidget ?? child,
-              ),
-            ),
+          child: Matrix(
+            clients: clients,
+            store: store,
+            child: testWidget ?? child,
           ),
         ),
       ),

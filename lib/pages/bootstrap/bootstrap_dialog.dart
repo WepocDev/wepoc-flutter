@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:future_loading_dialog/future_loading_dialog.dart';
 import 'package:matrix/encryption.dart';
 import 'package:matrix/matrix.dart';
 
@@ -12,6 +11,7 @@ import 'package:fluffychat/utils/error_reporter.dart';
 import 'package:fluffychat/utils/fluffy_share.dart';
 import 'package:fluffychat/utils/localized_exception_extension.dart';
 import 'package:fluffychat/utils/platform_infos.dart';
+import 'package:fluffychat/widgets/future_loading_dialog.dart';
 import '../../utils/adaptive_bottom_sheet.dart';
 import '../key_verification/key_verification_dialog.dart';
 
@@ -61,12 +61,12 @@ class BootstrapDialogState extends State<BootstrapDialog> {
 
   String _getSecureStorageLocalizedName() {
     if (PlatformInfos.isAndroid) {
-      return L10n.of(context)!.storeInAndroidKeystore;
+      return L10n.of(context).storeInAndroidKeystore;
     }
     if (PlatformInfos.isIOS || PlatformInfos.isMacOS) {
-      return L10n.of(context)!.storeInAppleKeyChain;
+      return L10n.of(context).storeInAppleKeyChain;
     }
-    return L10n.of(context)!.storeSecurlyOnThisDevice;
+    return L10n.of(context).storeSecurlyOnThisDevice;
   }
 
   @override
@@ -88,15 +88,16 @@ class BootstrapDialogState extends State<BootstrapDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     _wipe ??= widget.wipe;
     final buttons = <Widget>[];
     Widget body = const CircularProgressIndicator.adaptive();
-    titleText = L10n.of(context)!.loadingPleaseWait;
+    titleText = L10n.of(context).loadingPleaseWait;
 
     if (bootstrap.newSsssKey?.recoveryKey != null &&
         _recoveryKeyStored == false) {
       final key = bootstrap.newSsssKey!.recoveryKey;
-      titleText = L10n.of(context)!.recoveryKey;
+      titleText = L10n.of(context).recoveryKey;
       return Scaffold(
         appBar: AppBar(
           centerTitle: true,
@@ -104,7 +105,7 @@ class BootstrapDialogState extends State<BootstrapDialog> {
             icon: const Icon(Icons.close),
             onPressed: Navigator.of(context).pop,
           ),
-          title: Text(L10n.of(context)!.recoveryKey),
+          title: Text(L10n.of(context).recoveryKey),
         ),
         body: Center(
           child: ConstrainedBox(
@@ -119,10 +120,10 @@ class BootstrapDialogState extends State<BootstrapDialog> {
                     backgroundColor: Colors.transparent,
                     child: Icon(
                       Icons.info_outlined,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: theme.colorScheme.primary,
                     ),
                   ),
-                  subtitle: Text(L10n.of(context)!.chatBackupDescription),
+                  subtitle: Text(L10n.of(context).chatBackupDescription),
                 ),
                 const Divider(
                   height: 32,
@@ -144,7 +145,7 @@ class BootstrapDialogState extends State<BootstrapDialog> {
                   CheckboxListTile.adaptive(
                     contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
                     value: _storeInSecureStorage,
-                    activeColor: Theme.of(context).colorScheme.primary,
+                    activeColor: theme.colorScheme.primary,
                     onChanged: (b) {
                       setState(() {
                         _storeInSecureStorage = b;
@@ -152,24 +153,24 @@ class BootstrapDialogState extends State<BootstrapDialog> {
                     },
                     title: Text(_getSecureStorageLocalizedName()),
                     subtitle:
-                        Text(L10n.of(context)!.storeInSecureStorageDescription),
+                        Text(L10n.of(context).storeInSecureStorageDescription),
                   ),
                 const SizedBox(height: 16),
                 CheckboxListTile.adaptive(
                   contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
                   value: _recoveryKeyCopied,
-                  activeColor: Theme.of(context).colorScheme.primary,
+                  activeColor: theme.colorScheme.primary,
                   onChanged: (b) {
                     FluffyShare.share(key!, context);
                     setState(() => _recoveryKeyCopied = true);
                   },
-                  title: Text(L10n.of(context)!.copyToClipboard),
-                  subtitle: Text(L10n.of(context)!.saveKeyManuallyDescription),
+                  title: Text(L10n.of(context).copyToClipboard),
+                  subtitle: Text(L10n.of(context).saveKeyManuallyDescription),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton.icon(
                   icon: const Icon(Icons.check_outlined),
-                  label: Text(L10n.of(context)!.next),
+                  label: Text(L10n.of(context).next),
                   onPressed:
                       (_recoveryKeyCopied || _storeInSecureStorage == true)
                           ? () {
@@ -226,7 +227,7 @@ class BootstrapDialogState extends State<BootstrapDialog> {
                 icon: const Icon(Icons.close),
                 onPressed: Navigator.of(context).pop,
               ),
-              title: Text(L10n.of(context)!.chatBackup),
+              title: Text(L10n.of(context).chatBackup),
             ),
             body: Center(
               child: ConstrainedBox(
@@ -241,10 +242,10 @@ class BootstrapDialogState extends State<BootstrapDialog> {
                           const EdgeInsets.symmetric(horizontal: 8.0),
                       trailing: Icon(
                         Icons.info_outlined,
-                        color: Theme.of(context).colorScheme.primary,
+                        color: theme.colorScheme.primary,
                       ),
                       subtitle: Text(
-                        L10n.of(context)!.pleaseEnterRecoveryKeyDescription,
+                        L10n.of(context).pleaseEnterRecoveryKeyDescription,
                       ),
                     ),
                     const Divider(height: 32),
@@ -261,10 +262,11 @@ class BootstrapDialogState extends State<BootstrapDialog> {
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.all(16),
                         hintStyle: TextStyle(
-                          fontFamily:
-                              Theme.of(context).textTheme.bodyLarge?.fontFamily,
+                          fontFamily: theme.textTheme.bodyLarge?.fontFamily,
                         ),
-                        hintText: L10n.of(context)!.recoveryKey,
+                        prefixIcon: const Icon(Icons.key_outlined),
+                        labelText: L10n.of(context).recoveryKey,
+                        hintText: 'Es** **** **** ****',
                         errorText: _recoveryKeyInputError,
                         errorMaxLines: 2,
                       ),
@@ -272,14 +274,13 @@ class BootstrapDialogState extends State<BootstrapDialog> {
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        foregroundColor:
-                            Theme.of(context).colorScheme.onPrimary,
-                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: theme.colorScheme.onPrimary,
+                        backgroundColor: theme.colorScheme.primary,
                       ),
                       icon: _recoveryKeyInputLoading
                           ? const CircularProgressIndicator.adaptive()
                           : const Icon(Icons.lock_open_outlined),
-                      label: Text(L10n.of(context)!.unlockOldMessages),
+                      label: Text(L10n.of(context).unlockOldMessages),
                       onPressed: _recoveryKeyInputLoading
                           ? null
                           : () async {
@@ -322,7 +323,7 @@ class BootstrapDialogState extends State<BootstrapDialog> {
                               } on FormatException catch (_) {
                                 setState(
                                   () => _recoveryKeyInputError =
-                                      L10n.of(context)!.wrongRecoveryKey,
+                                      L10n.of(context).wrongRecoveryKey,
                                 );
                               } catch (e, s) {
                                 ErrorReporter(
@@ -346,7 +347,7 @@ class BootstrapDialogState extends State<BootstrapDialog> {
                         const Expanded(child: Divider()),
                         Padding(
                           padding: const EdgeInsets.all(12.0),
-                          child: Text(L10n.of(context)!.or),
+                          child: Text(L10n.of(context).or),
                         ),
                         const Expanded(child: Divider()),
                       ],
@@ -354,22 +355,23 @@ class BootstrapDialogState extends State<BootstrapDialog> {
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
                       icon: const Icon(Icons.cast_connected_outlined),
-                      label: Text(L10n.of(context)!.transferFromAnotherDevice),
+                      label: Text(L10n.of(context).transferFromAnotherDevice),
                       onPressed: _recoveryKeyInputLoading
                           ? null
                           : () async {
                               final consent = await showOkCancelAlertDialog(
                                 context: context,
-                                title: L10n.of(context)!.verifyOtherDevice,
-                                message: L10n.of(context)!
+                                title: L10n.of(context).verifyOtherDevice,
+                                message: L10n.of(context)
                                     .verifyOtherDeviceDescription,
-                                okLabel: L10n.of(context)!.ok,
-                                cancelLabel: L10n.of(context)!.cancel,
+                                okLabel: L10n.of(context).ok,
+                                cancelLabel: L10n.of(context).cancel,
                                 fullyCapitalizedForMaterial: false,
                               );
                               if (consent != OkCancelResult.ok) return;
                               final req = await showFutureLoadingDialog(
                                 context: context,
+                                delay: false,
                                 future: () async {
                                   await widget.client.updateUserDeviceKeys();
                                   return widget.client
@@ -386,13 +388,11 @@ class BootstrapDialogState extends State<BootstrapDialog> {
                     const SizedBox(height: 16),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            Theme.of(context).colorScheme.errorContainer,
-                        foregroundColor:
-                            Theme.of(context).colorScheme.onErrorContainer,
+                        backgroundColor: theme.colorScheme.errorContainer,
+                        foregroundColor: theme.colorScheme.onErrorContainer,
                       ),
                       icon: const Icon(Icons.delete_outlined),
-                      label: Text(L10n.of(context)!.recoveryKeyLost),
+                      label: Text(L10n.of(context).recoveryKeyLost),
                       onPressed: _recoveryKeyInputLoading
                           ? null
                           : () async {
@@ -400,10 +400,10 @@ class BootstrapDialogState extends State<BootstrapDialog> {
                                   await showOkCancelAlertDialog(
                                     useRootNavigator: false,
                                     context: context,
-                                    title: L10n.of(context)!.recoveryKeyLost,
-                                    message: L10n.of(context)!.wipeChatBackup,
-                                    okLabel: L10n.of(context)!.ok,
-                                    cancelLabel: L10n.of(context)!.cancel,
+                                    title: L10n.of(context).recoveryKeyLost,
+                                    message: L10n.of(context).wipeChatBackup,
+                                    okLabel: L10n.of(context).ok,
+                                    cancelLabel: L10n.of(context).cancel,
                                     isDestructiveAction: true,
                                   )) {
                                 setState(() => _createBootstrap(true));
@@ -441,18 +441,18 @@ class BootstrapDialogState extends State<BootstrapDialog> {
           );
           break;
         case BootstrapState.error:
-          titleText = L10n.of(context)!.oopsSomethingWentWrong;
+          titleText = L10n.of(context).oopsSomethingWentWrong;
           body = const Icon(Icons.error_outline, color: Colors.red, size: 80);
           buttons.add(
             OutlinedButton(
               onPressed: () =>
                   Navigator.of(context, rootNavigator: false).pop<bool>(false),
-              child: Text(L10n.of(context)!.close),
+              child: Text(L10n.of(context).close),
             ),
           );
           break;
         case BootstrapState.done:
-          titleText = L10n.of(context)!.everythingReady;
+          titleText = L10n.of(context).everythingReady;
           body = Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -463,7 +463,7 @@ class BootstrapDialogState extends State<BootstrapDialog> {
               ),
               const SizedBox(height: 16),
               Text(
-                L10n.of(context)!.yourChatBackupHasBeenSetUp,
+                L10n.of(context).yourChatBackupHasBeenSetUp,
                 style: const TextStyle(fontSize: 20),
               ),
               const SizedBox(height: 16),
@@ -473,7 +473,7 @@ class BootstrapDialogState extends State<BootstrapDialog> {
             OutlinedButton(
               onPressed: () =>
                   Navigator.of(context, rootNavigator: false).pop<bool>(false),
-              child: Text(L10n.of(context)!.close),
+              child: Text(L10n.of(context).close),
             ),
           );
           break;
@@ -488,7 +488,7 @@ class BootstrapDialogState extends State<BootstrapDialog> {
                 Navigator.of(context, rootNavigator: false).pop<bool>(true),
           ),
         ),
-        title: Text(titleText ?? L10n.of(context)!.loadingPleaseWait),
+        title: Text(titleText ?? L10n.of(context).loadingPleaseWait),
       ),
       body: Center(
         child: Column(

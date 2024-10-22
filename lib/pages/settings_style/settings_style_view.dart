@@ -20,22 +20,24 @@ class SettingsStyleView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     const colorPickerSize = 32.0;
     final client = Matrix.of(context).client;
     return Scaffold(
       appBar: AppBar(
         leading: const Center(child: BackButton()),
-        title: Text(L10n.of(context)!.changeTheme),
+        title: Text(L10n.of(context).changeTheme),
       ),
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: theme.colorScheme.surface,
       body: MaxWidthBody(
         child: Column(
           children: [
             ListTile(
               title: Text(
-                L10n.of(context)!.setColorTheme,
+                L10n.of(context).setColorTheme,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: theme.colorScheme.secondary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -88,18 +90,16 @@ class SettingsStyleView extends StatelessWidget {
                                                   child: Icon(
                                                     Icons.check,
                                                     size: 16,
-                                                    color: Theme.of(context)
-                                                        .colorScheme
-                                                        .onSurface,
+                                                    color: theme
+                                                        .colorScheme.onSurface,
                                                   ),
                                                 ),
                                               Text(
-                                                L10n.of(context)!.systemTheme,
+                                                L10n.of(context).systemTheme,
                                                 textAlign: TextAlign.center,
                                                 style: TextStyle(
-                                                  color: Theme.of(context)
-                                                      .colorScheme
-                                                      .onSurface,
+                                                  color: theme
+                                                      .colorScheme.onSurface,
                                                 ),
                                               ),
                                             ],
@@ -136,13 +136,13 @@ class SettingsStyleView extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Divider(
-              color: Theme.of(context).dividerColor,
+              color: theme.dividerColor,
             ),
             ListTile(
               title: Text(
-                L10n.of(context)!.setTheme,
+                L10n.of(context).setTheme,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: theme.colorScheme.secondary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -150,53 +150,53 @@ class SettingsStyleView extends StatelessWidget {
             RadioListTile<ThemeMode>(
               groupValue: controller.currentTheme,
               value: ThemeMode.system,
-              title: Text(L10n.of(context)!.systemTheme),
+              title: Text(L10n.of(context).systemTheme),
               onChanged: controller.switchTheme,
             ),
             RadioListTile<ThemeMode>(
               groupValue: controller.currentTheme,
               value: ThemeMode.light,
-              title: Text(L10n.of(context)!.lightTheme),
+              title: Text(L10n.of(context).lightTheme),
               onChanged: controller.switchTheme,
             ),
             RadioListTile<ThemeMode>(
               groupValue: controller.currentTheme,
               value: ThemeMode.dark,
-              title: Text(L10n.of(context)!.darkTheme),
+              title: Text(L10n.of(context).darkTheme),
               onChanged: controller.switchTheme,
             ),
             Divider(
-              color: Theme.of(context).dividerColor,
+              color: theme.dividerColor,
             ),
             ListTile(
               title: Text(
-                L10n.of(context)!.overview,
+                L10n.of(context).overview,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: theme.colorScheme.secondary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
             SettingsSwitchListTile.adaptive(
-              title: L10n.of(context)!.presencesToggle,
+              title: L10n.of(context).presencesToggle,
               onChanged: (b) => AppConfig.showPresences = b,
               storeKey: SettingKeys.showPresences,
               defaultValue: AppConfig.showPresences,
             ),
             SettingsSwitchListTile.adaptive(
-              title: L10n.of(context)!.separateChatTypes,
+              title: L10n.of(context).separateChatTypes,
               onChanged: (b) => AppConfig.separateChatTypes = b,
               storeKey: SettingKeys.separateChatTypes,
               defaultValue: AppConfig.separateChatTypes,
             ),
             Divider(
-              color: Theme.of(context).dividerColor,
+              color: theme.dividerColor,
             ),
             ListTile(
               title: Text(
-                L10n.of(context)!.messagesStyle,
+                L10n.of(context).messagesStyle,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.secondary,
+                  color: theme.colorScheme.secondary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -246,7 +246,7 @@ class SettingsStyleView extends StatelessWidget {
                               bottom: 12,
                             ),
                             child: Material(
-                              color: Theme.of(context).colorScheme.primary,
+                              color: theme.colorScheme.primary,
                               borderRadius: BorderRadius.circular(
                                 AppConfig.borderRadius,
                               ),
@@ -258,8 +258,7 @@ class SettingsStyleView extends StatelessWidget {
                                 child: Text(
                                   'Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor',
                                   style: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.onPrimary,
+                                    color: theme.colorScheme.onPrimary,
                                     fontSize: AppConfig.messageFontSize *
                                         AppConfig.fontSizeFactor,
                                   ),
@@ -271,13 +270,13 @@ class SettingsStyleView extends StatelessWidget {
                       ),
                     ),
                     ListTile(
-                      title: Text(L10n.of(context)!.wallpaper),
+                      title: Text(L10n.of(context).wallpaper),
                       leading: const Icon(Icons.photo_outlined),
                       trailing: accountConfig.wallpaperUrl == null
                           ? null
                           : IconButton(
                               icon: const Icon(Icons.delete_outlined),
-                              color: Theme.of(context).colorScheme.error,
+                              color: theme.colorScheme.error,
                               onPressed: controller.deleteChatWallpaper,
                             ),
                       onTap: controller.setWallpaper,
@@ -287,7 +286,7 @@ class SettingsStyleView extends StatelessWidget {
                       curve: FluffyThemes.animationCurve,
                       child: accountConfig.wallpaperUrl != null
                           ? SwitchListTile.adaptive(
-                              title: Text(L10n.of(context)!.transparent),
+                              title: Text(L10n.of(context).transparent),
                               secondary: const Icon(Icons.blur_linear_outlined),
                               value: !wallpaperOpacityIsDefault,
                               onChanged: (_) =>
@@ -302,7 +301,7 @@ class SettingsStyleView extends StatelessWidget {
               },
             ),
             ListTile(
-              title: Text(L10n.of(context)!.fontSize),
+              title: Text(L10n.of(context).fontSize),
               trailing: Text('× ${AppConfig.fontSizeFactor}'),
             ),
             Slider.adaptive(
