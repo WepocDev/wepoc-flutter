@@ -23,6 +23,8 @@ class LoginScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final isMobileMode =
         enforceMobileMode || !FluffyThemes.isColumnMode(context);
     final scaffold = Scaffold(
@@ -39,16 +41,17 @@ class LoginScaffold extends StatelessWidget {
               actions: appBar?.actions,
               backgroundColor: isMobileMode ? null : Colors.transparent,
             ),
-      body: body,
-      backgroundColor: isMobileMode
-          ? null
-          : Theme.of(context).colorScheme.surface.withOpacity(0.8),
+      body: SafeArea(child: body),
+      backgroundColor:
+          isMobileMode ? null : theme.colorScheme.surface.withOpacity(0.8),
       bottomNavigationBar: isMobileMode
           ? Material(
               elevation: 4,
-              shadowColor: Theme.of(context).colorScheme.onSurface,
-              child: const _PrivacyButtons(
-                mainAxisAlignment: MainAxisAlignment.center,
+              shadowColor: theme.colorScheme.onSurface,
+              child: const SafeArea(
+                child: _PrivacyButtons(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                ),
               ),
             )
           : null,
@@ -72,13 +75,12 @@ class LoginScaffold extends StatelessWidget {
                   color: Colors.transparent,
                   borderRadius: BorderRadius.circular(AppConfig.borderRadius),
                   clipBehavior: Clip.hardEdge,
-                  elevation:
-                      Theme.of(context).appBarTheme.scrolledUnderElevation ?? 4,
-                  shadowColor: Theme.of(context).appBarTheme.shadowColor,
+                  elevation: theme.appBarTheme.scrolledUnderElevation ?? 4,
+                  shadowColor: theme.appBarTheme.shadowColor,
                   child: ConstrainedBox(
                     constraints: isMobileMode
                         ? const BoxConstraints()
-                        : const BoxConstraints(maxWidth: 480, maxHeight: 720),
+                        : const BoxConstraints(maxWidth: 480, maxHeight: 640),
                     child: BackdropFilter(
                       filter: ImageFilter.blur(
                         sigmaX: 10.0,
@@ -126,14 +128,14 @@ class _PrivacyButtons extends StatelessWidget {
             TextButton(
               onPressed: () => PlatformInfos.showDialog(context),
               child: Text(
-                L10n.of(context)!.about,
+                L10n.of(context).about,
                 style: shadowTextStyle,
               ),
             ),
             TextButton(
               onPressed: () => launchUrlString(AppConfig.privacyUrl),
               child: Text(
-                L10n.of(context)!.privacy,
+                L10n.of(context).privacy,
                 style: shadowTextStyle,
               ),
             ),

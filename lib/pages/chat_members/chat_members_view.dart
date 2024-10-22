@@ -20,10 +20,10 @@ class ChatMembersView extends StatelessWidget {
     if (room == null) {
       return Scaffold(
         appBar: AppBar(
-          title: Text(L10n.of(context)!.oopsSomethingWentWrong),
+          title: Text(L10n.of(context).oopsSomethingWentWrong),
         ),
         body: Center(
-          child: Text(L10n.of(context)!.youAreNoLongerParticipatingInThisChat),
+          child: Text(L10n.of(context).youAreNoLongerParticipatingInThisChat),
         ),
       );
     }
@@ -34,12 +34,13 @@ class ChatMembersView extends StatelessWidget {
         (room.summary.mInvitedMemberCount ?? 0);
 
     final error = controller.error;
+    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(
         leading: const Center(child: BackButton()),
         title: Text(
-          L10n.of(context)!.countParticipants(roomCount),
+          L10n.of(context).countParticipants(roomCount),
         ),
         actions: [
           if (room.canInvite)
@@ -67,7 +68,7 @@ class ChatMembersView extends StatelessWidget {
                       OutlinedButton.icon(
                         onPressed: controller.refreshMembers,
                         icon: const Icon(Icons.refresh_outlined),
-                        label: Text(L10n.of(context)!.tryAgain),
+                        label: Text(L10n.of(context).tryAgain),
                       ),
                     ],
                   ),
@@ -90,8 +91,18 @@ class ChatMembersView extends StatelessWidget {
                               controller: controller.filterController,
                               onChanged: controller.setFilter,
                               decoration: InputDecoration(
+                                filled: true,
+                                fillColor: theme.colorScheme.secondaryContainer,
+                                border: OutlineInputBorder(
+                                  borderSide: BorderSide.none,
+                                  borderRadius: BorderRadius.circular(99),
+                                ),
+                                hintStyle: TextStyle(
+                                  color: theme.colorScheme.onPrimaryContainer,
+                                  fontWeight: FontWeight.normal,
+                                ),
                                 prefixIcon: const Icon(Icons.search_outlined),
-                                hintText: L10n.of(context)!.search,
+                                hintText: L10n.of(context).search,
                               ),
                             ),
                           )

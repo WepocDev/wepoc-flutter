@@ -27,6 +27,8 @@ class StickerPickerDialogState extends State<StickerPickerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final stickerPacks = widget.room.getImagePacks(ImagePackUsage.sticker);
     final packSlugs = stickerPacks.keys.toList();
 
@@ -100,7 +102,7 @@ class StickerPickerDialogState extends State<StickerPickerDialog> {
     };
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.onInverseSurface,
+      backgroundColor: theme.colorScheme.onInverseSurface,
       body: SizedBox(
         width: double.maxFinite,
         child: CustomScrollView(
@@ -115,7 +117,7 @@ class StickerPickerDialogState extends State<StickerPickerDialog> {
                 child: TextField(
                   autofocus: false,
                   decoration: InputDecoration(
-                    hintText: L10n.of(context)!.search,
+                    hintText: L10n.of(context).search,
                     prefixIcon: const Icon(Icons.search_outlined),
                     contentPadding: EdgeInsets.zero,
                   ),
@@ -129,7 +131,7 @@ class StickerPickerDialogState extends State<StickerPickerDialog> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(L10n.of(context)!.noEmotesFound),
+                      Text(L10n.of(context).noEmotesFound),
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         onPressed: () => UrlLauncher(
@@ -137,7 +139,7 @@ class StickerPickerDialogState extends State<StickerPickerDialog> {
                           'https://matrix.to/#/#fluffychat-stickers:janian.de',
                         ).launchUrl(),
                         icon: const Icon(Icons.explore_outlined),
-                        label: Text(L10n.of(context)!.discover),
+                        label: Text(L10n.of(context).discover),
                       ),
                     ],
                   ),

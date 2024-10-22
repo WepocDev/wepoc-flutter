@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
-import 'package:fluffychat/config/themes.dart';
 import 'package:fluffychat/widgets/layouts/login_scaffold.dart';
 import 'package:fluffychat/widgets/matrix.dart';
 import 'login.dart';
@@ -17,11 +16,7 @@ class LoginView extends StatelessWidget {
     const homeserver = "Wepoc";
     final title = L10n.of(context)!.logInTo(homeserver);
     final titleParts = title.split(homeserver);
-
-    final textFieldFillColor = FluffyThemes.isColumnMode(context)
-        ? Theme.of(context).colorScheme.surface
-        // ignore: deprecated_member_use
-        : Theme.of(context).colorScheme.surfaceVariant;
+    final theme = Theme.of(context);
 
     return LoginScaffold(
       enforceMobileMode: Matrix.of(context).client.isLogged(),
@@ -66,8 +61,8 @@ class LoginView extends StatelessWidget {
                       prefixIcon: const Icon(Icons.account_box_outlined),
                       errorText: controller.usernameError,
                       errorStyle: const TextStyle(color: Colors.orange),
-                      fillColor: textFieldFillColor,
-                      hintText: L10n.of(context)!.emailOrUsername,
+                      hintText: '@username:localpart',
+                      labelText: L10n.of(context).emailOrUsername,
                     ),
                   ),
                 ),
@@ -87,7 +82,6 @@ class LoginView extends StatelessWidget {
                       prefixIcon: const Icon(Icons.lock_outlined),
                       errorText: controller.passwordError,
                       errorStyle: const TextStyle(color: Colors.orange),
-                      fillColor: textFieldFillColor,
                       suffixIcon: IconButton(
                         onPressed: controller.toggleShowPassword,
                         icon: Icon(
@@ -97,37 +91,36 @@ class LoginView extends StatelessWidget {
                           color: Colors.black,
                         ),
                       ),
-                      hintText: L10n.of(context)!.password,
+                      hintText: '******',
+                      labelText: L10n.of(context).password,
                     ),
                   ),
                 ),
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: ElevatedButton.icon(
+                  child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                      backgroundColor: theme.colorScheme.primary,
+                      foregroundColor: theme.colorScheme.onPrimary,
                     ),
                     onPressed: controller.loading ? null : controller.login,
-                    icon: const Icon(Icons.login_outlined),
-                    label: controller.loading
+                    child: controller.loading
                         ? const LinearProgressIndicator()
-                        : Text(L10n.of(context)!.login),
+                        : Text(L10n.of(context).login),
                   ),
                 ),
                 const SizedBox(height: 16),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: TextButton.icon(
+                  child: TextButton(
                     onPressed: controller.loading
                         ? () {}
                         : controller.passwordForgotten,
                     style: TextButton.styleFrom(
-                      foregroundColor: Theme.of(context).colorScheme.error,
+                      foregroundColor: theme.colorScheme.error,
                     ),
-                    icon: const Icon(Icons.safety_check_outlined),
-                    label: Text(L10n.of(context)!.passwordForgotten),
+                    child: Text(L10n.of(context).passwordForgotten),
                   ),
                 ),
                 const SizedBox(height: 16),

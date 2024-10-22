@@ -1557,7 +1557,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "defaultPermissionLevel": "Типовий рівень дозволів",
+  "defaultPermissionLevel": "Типовий рівень дозволів для нових користувачів",
   "@defaultPermissionLevel": {
     "type": "text",
     "placeholders": {}
@@ -1665,7 +1665,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "yourChatBackupHasBeenSetUp": "Резервне копіювання бесіди налаштовано.",
+  "yourChatBackupHasBeenSetUp": "Рез. копію чату налаштовано.",
   "@yourChatBackupHasBeenSetUp": {},
   "clearArchive": "Очистити архів",
   "@clearArchive": {},
@@ -1913,12 +1913,12 @@
   },
   "unverified": "Неперевірений",
   "@unverified": {},
-  "locationDisabledNotice": "Служби визначення місцеположення вимкнені. Увімкніть їх, щоб могти надавати доступ до вашого місцеположення.",
+  "locationDisabledNotice": "Служби визначення розташування вимкнені. Увімкніть їх, щоб мати змогу ділитися своїм розташуванням.",
   "@locationDisabledNotice": {
     "type": "text",
     "placeholders": {}
   },
-  "locationPermissionDeniedNotice": "Дозвіл на розташування відхилено. Надайте можливість ділитися своїм місцеперебуванням.",
+  "locationPermissionDeniedNotice": "Дозвіл на розташування відхилено. Надайте можливість ділитися своїм розташуванням.",
   "@locationPermissionDeniedNotice": {
     "type": "text",
     "placeholders": {}
@@ -2271,7 +2271,7 @@
   "@noOtherDevicesFound": {},
   "noBackupWarning": "Увага! Якщо ви не ввімкнете резервне копіювання бесіди, ви втратите доступ до своїх зашифрованих повідомлень. Наполегливо радимо ввімкнути резервне копіювання бесіди перед виходом.",
   "@noBackupWarning": {},
-  "fileIsTooBigForServer": "Сервер повідомляє, що файл завеликий для надсилання.",
+  "fileIsTooBigForServer": "Не вдалося надіслати! Сервер підтримує вкладення розміром до {max}.",
   "@fileIsTooBigForServer": {},
   "fileHasBeenSavedAt": "Файл збережено в {path}",
   "@fileHasBeenSavedAt": {
@@ -2708,5 +2708,125 @@
   "@thereAreCountUsersBlocked": {
     "type": "text",
     "count": {}
+  },
+  "moderatorLevel": "{level} - Модератор",
+  "@moderatorLevel": {
+    "type": "text",
+    "placeholders": {
+      "level": {}
+    }
+  },
+  "adminLevel": "{level} - Адміністратор",
+  "@adminLevel": {
+    "type": "text",
+    "placeholders": {
+      "level": {}
+    }
+  },
+  "userLevel": "{level} - Користувач",
+  "@userLevel": {
+    "type": "text",
+    "placeholders": {
+      "level": {}
+    }
+  },
+  "changeGeneralChatSettings": "Змінити загальні налаштування чату",
+  "@changeGeneralChatSettings": {},
+  "inviteOtherUsers": "Запросити інших користувачів до цього чату",
+  "@inviteOtherUsers": {},
+  "changeTheChatPermissions": "Змінити права доступу до чату",
+  "@changeTheChatPermissions": {},
+  "changeTheVisibilityOfChatHistory": "Змінити видимість історії чату",
+  "@changeTheVisibilityOfChatHistory": {},
+  "changeTheCanonicalRoomAlias": "Змінити основну адресу загальнодоступного чату",
+  "@changeTheCanonicalRoomAlias": {},
+  "sendRoomNotifications": "Надсилати сповіщення @room",
+  "@sendRoomNotifications": {},
+  "space": "Простір",
+  "@space": {},
+  "spaces": "Простори",
+  "@spaces": {},
+  "goToSpace": "Перейти до простору: {space}",
+  "@goToSpace": {
+    "type": "text",
+    "space": {}
+  },
+  "markAsUnread": "Позначити непрочитаним",
+  "@markAsUnread": {},
+  "alwaysUse24HourFormat": "ні",
+  "@alwaysUse24HourFormat": {
+    "description": "Set to true to always display time of day in 24 hour format."
+  },
+  "invitedBy": "📩 Запрошений {user}",
+  "@invitedBy": {
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "changeTheDescriptionOfTheGroup": "Змінити опис чату",
+  "@changeTheDescriptionOfTheGroup": {},
+  "updateInstalled": "🎉 Оновлення {version} встановлено!",
+  "@updateInstalled": {
+    "type": "text",
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "changelog": "Зміни",
+  "@changelog": {},
+  "chatPermissionsDescription": "Визначте, який рівень повноважень необхідний для певних дій у цьому чаті. Рівні повноважень 0, 50 і 100 зазвичай представляють користувачів, модераторів та адміністраторів, але можливі будь-які градації.",
+  "@chatPermissionsDescription": {},
+  "countChatsAndCountParticipants": "{chats} чати та {participants} учасників",
+  "@countChatsAndCountParticipants": {
+    "type": "text",
+    "placeholders": {
+      "chats": {},
+      "participants": {}
+    }
+  },
+  "noMoreChatsFound": "Більше чатів не знайдено...",
+  "@noMoreChatsFound": {},
+  "joinedChats": "Приєднані чати",
+  "@joinedChats": {},
+  "unread": "Непрочитані",
+  "@unread": {},
+  "sendCanceled": "Надсилання скасовано",
+  "@sendCanceled": {},
+  "noChatsFoundHere": "Бесід ще немає. Розпочніть спілкування натиснувши кнопку нижче. ⤵️",
+  "@noChatsFoundHere": {},
+  "loginWithMatrixId": "Увійти за допомогою Matrix-ID",
+  "@loginWithMatrixId": {},
+  "discoverHomeservers": "Знайти домашні сервери",
+  "@discoverHomeservers": {},
+  "whatIsAHomeserver": "Що таке домашній сервер?",
+  "@whatIsAHomeserver": {},
+  "homeserverDescription": "Усі ваші дані зберігаються на домашньому сервері, так само як у постачальника послуг електронної пошти. Ви можете вибрати, який домашній сервер ви хочете використовувати, водночас ви можете спілкуватися з усіма. Докладніше на https://matrix.org.",
+  "@homeserverDescription": {},
+  "doesNotSeemToBeAValidHomeserver": "Здається, це несумісний домашній сервер. Неправильна URL-адреса?",
+  "@doesNotSeemToBeAValidHomeserver": {},
+  "calculatingFileSize": "Обчислення розміру файлу...",
+  "@calculatingFileSize": {},
+  "prepareSendingAttachment": "Підготовка до надсилання вкладення...",
+  "@prepareSendingAttachment": {},
+  "sendingAttachment": "Надсилання вкладення...",
+  "@sendingAttachment": {},
+  "generatingVideoThumbnail": "Генерування мініатюри відео...",
+  "@generatingVideoThumbnail": {},
+  "compressVideo": "Стиснення відео...",
+  "@compressVideo": {},
+  "sendingAttachmentCountOfCount": "Надсилання вкладення {index} з {length}...",
+  "@sendingAttachmentCountOfCount": {
+    "type": "integer",
+    "placeholders": {
+      "index": {},
+      "length": {}
+    }
+  },
+  "serverLimitReached": "Досягнуто ліміту сервера! Очікування {seconds} секунд...",
+  "@serverLimitReached": {
+    "type": "integer",
+    "placeholders": {
+      "seconds": {}
+    }
   }
 }

@@ -18,7 +18,7 @@ class SettingsNotificationsView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: const Center(child: BackButton()),
-        title: Text(L10n.of(context)!.notifications),
+        title: Text(L10n.of(context).notifications),
       ),
       body: MaxWidthBody(
         child: StreamBuilder(
@@ -30,23 +30,24 @@ class SettingsNotificationsView extends StatelessWidget {
                     false,
               ),
           builder: (BuildContext context, _) {
+            final theme = Theme.of(context);
             return Column(
               children: [
                 SwitchListTile.adaptive(
                   value: !Matrix.of(context).client.allPushNotificationsMuted,
                   title: Text(
-                    L10n.of(context)!.notificationsEnabledForThisAccount,
+                    L10n.of(context).notificationsEnabledForThisAccount,
                   ),
                   onChanged: controller.isLoading
                       ? null
                       : (_) => controller.onToggleMuteAllNotifications(),
                 ),
-                Divider(color: Theme.of(context).dividerColor),
+                Divider(color: theme.dividerColor),
                 ListTile(
                   title: Text(
-                    L10n.of(context)!.notifyMeFor,
+                    L10n.of(context).notifyMeFor,
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
+                      color: theme.colorScheme.secondary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -64,12 +65,12 @@ class SettingsNotificationsView extends StatelessWidget {
                             : (bool enabled) => controller
                                 .setNotificationSetting(item, enabled),
                   ),
-                Divider(color: Theme.of(context).dividerColor),
+                Divider(color: theme.dividerColor),
                 ListTile(
                   title: Text(
-                    L10n.of(context)!.devices,
+                    L10n.of(context).devices,
                     style: TextStyle(
-                      color: Theme.of(context).colorScheme.secondary,
+                      color: theme.colorScheme.secondary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -97,7 +98,7 @@ class SettingsNotificationsView extends StatelessWidget {
                       return Center(
                         child: Padding(
                           padding: const EdgeInsets.only(bottom: 16.0),
-                          child: Text(L10n.of(context)!.noOtherDevicesFound),
+                          child: Text(L10n.of(context).noOtherDevicesFound),
                         ),
                       );
                     }

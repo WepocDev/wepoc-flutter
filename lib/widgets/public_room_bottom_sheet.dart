@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
-import 'package:future_loading_dialog/future_loading_dialog.dart';
 import 'package:go_router/go_router.dart';
 import 'package:matrix/matrix.dart';
 
 import 'package:fluffychat/utils/fluffy_share.dart';
 import 'package:fluffychat/utils/url_launcher.dart';
 import 'package:fluffychat/widgets/avatar.dart';
+import 'package:fluffychat/widgets/future_loading_dialog.dart';
 import 'package:fluffychat/widgets/matrix.dart';
 
 class PublicRoomBottomSheet extends StatelessWidget {
@@ -76,7 +76,7 @@ class PublicRoomBottomSheet extends StatelessWidget {
           ),
         );
     if (!query.chunk.any(_testRoom)) {
-      throw (L10n.of(outerContext)!.noRoomsFound);
+      throw (L10n.of(outerContext).noRoomsFound);
     }
     return query.chunk.firstWhere(_testRoom);
   }
@@ -95,7 +95,7 @@ class PublicRoomBottomSheet extends StatelessWidget {
           leading: IconButton(
             icon: const Icon(Icons.arrow_downward_outlined),
             onPressed: Navigator.of(context, rootNavigator: false).pop,
-            tooltip: L10n.of(context)!.close,
+            tooltip: L10n.of(context).close,
           ),
           actions: [
             Padding(
@@ -113,6 +113,8 @@ class PublicRoomBottomSheet extends StatelessWidget {
         body: FutureBuilder<PublicRoomsChunk>(
           future: _search(),
           builder: (context, snapshot) {
+            final theme = Theme.of(context);
+
             final profile = snapshot.data;
             return ListView(
               padding: EdgeInsets.zero,
@@ -150,8 +152,7 @@ class PublicRoomBottomSheet extends StatelessWidget {
                               size: 14,
                             ),
                             style: TextButton.styleFrom(
-                              foregroundColor:
-                                  Theme.of(context).colorScheme.onSurface,
+                              foregroundColor: theme.colorScheme.onSurface,
                             ),
                             label: Text(
                               roomLink ?? '...',
@@ -166,11 +167,10 @@ class PublicRoomBottomSheet extends StatelessWidget {
                               size: 14,
                             ),
                             style: TextButton.styleFrom(
-                              foregroundColor:
-                                  Theme.of(context).colorScheme.onSurface,
+                              foregroundColor: theme.colorScheme.onSurface,
                             ),
                             label: Text(
-                              L10n.of(context)!.countParticipants(
+                              L10n.of(context).countParticipants(
                                 profile?.numJoinedMembers ?? 0,
                               ),
                               maxLines: 1,
@@ -192,10 +192,10 @@ class PublicRoomBottomSheet extends StatelessWidget {
                                       .client
                                       .getRoomById(chunk!.roomId) ==
                                   null
-                          ? L10n.of(context)!.knock
+                          ? L10n.of(context).knock
                           : chunk?.roomType == 'm.space'
-                              ? L10n.of(context)!.joinSpace
-                              : L10n.of(context)!.joinRoom,
+                              ? L10n.of(context).joinSpace
+                              : L10n.of(context).joinRoom,
                     ),
                     icon: const Icon(Icons.navigate_next),
                   ),
@@ -211,7 +211,7 @@ class PublicRoomBottomSheet extends StatelessWidget {
                       ),
                       style: TextStyle(
                         fontSize: 14,
-                        color: Theme.of(context).textTheme.bodyMedium!.color,
+                        color: theme.textTheme.bodyMedium!.color,
                       ),
                       options: const LinkifyOptions(humanize: false),
                       onOpen: (url) =>

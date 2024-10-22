@@ -12,6 +12,8 @@ class StateMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0),
       child: Center(
@@ -19,7 +21,7 @@ class StateMessage extends StatelessWidget {
           padding: const EdgeInsets.all(8),
           child: Text(
             event.calcLocalizedBodyFallback(
-              MatrixLocals(L10n.of(context)!),
+              MatrixLocals(L10n.of(context)),
             ),
             textAlign: TextAlign.center,
             style: TextStyle(
@@ -27,7 +29,7 @@ class StateMessage extends StatelessWidget {
               decoration: event.redacted ? TextDecoration.lineThrough : null,
               shadows: [
                 Shadow(
-                  color: Theme.of(context).colorScheme.surface,
+                  color: theme.colorScheme.surface,
                   blurRadius: 3,
                 ),
               ],

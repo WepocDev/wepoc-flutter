@@ -11,6 +11,7 @@ abstract class UpdateNotifier {
   static const String versionStoreKey = 'last_known_version';
 
   static void showUpdateSnackBar(BuildContext context) async {
+    final theme = Theme.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     final currentVersion = await PlatformInfos.getVersion();
     final store = await SharedPreferences.getInstance();
@@ -28,19 +29,19 @@ abstract class UpdateNotifier {
                   icon: Icon(
                     Icons.close_outlined,
                     size: 20,
-                    color: Theme.of(context).colorScheme.onPrimary,
+                    color: theme.colorScheme.onPrimary,
                   ),
                   onPressed: () => controller?.close(),
                 ),
                 Expanded(
                   child: Text(
-                    L10n.of(context)!.updateInstalled(currentVersion),
+                    L10n.of(context).updateInstalled(currentVersion),
                   ),
                 ),
               ],
             ),
             action: SnackBarAction(
-              label: L10n.of(context)!.changelog,
+              label: L10n.of(context).changelog,
               onPressed: () => launchUrlString(AppConfig.changelogUrl),
             ),
           ),

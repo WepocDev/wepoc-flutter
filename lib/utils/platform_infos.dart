@@ -29,6 +29,7 @@ abstract class PlatformInfos {
 
   static bool get usesTouchscreen => !isMobile;
 
+  /// Web could also record in theory but currently only wav which is too large
   static bool get platformCanRecord => (isMobile || isMacOS);
 
   static String get clientName =>
@@ -51,7 +52,7 @@ abstract class PlatformInfos {
         TextButton.icon(
           onPressed: () => launchUrlString(AppConfig.sourceCodeUrl),
           icon: const Icon(Icons.source_outlined),
-          label: Text(L10n.of(context)!.sourceCode),
+          label: Text(L10n.of(context).sourceCode),
         ),
         TextButton.icon(
           onPressed: () => launchUrlString(AppConfig.emojiFontUrl),

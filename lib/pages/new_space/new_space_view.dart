@@ -16,7 +16,7 @@ class NewSpaceView extends StatelessWidget {
     final avatar = controller.avatar;
     return Scaffold(
       appBar: AppBar(
-        title: Text(L10n.of(context)!.createNewSpace),
+        title: Text(L10n.of(context).createNewSpace),
       ),
       body: MaxWidthBody(
         child: Column(
@@ -51,23 +51,25 @@ class NewSpaceView extends StatelessWidget {
                 readOnly: controller.loading,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.people_outlined),
-                  hintText: L10n.of(context)!.spaceName,
+                  labelText: L10n.of(context).spaceName,
                   errorText: controller.nameError,
                 ),
               ),
             ),
             const SizedBox(height: 16),
             SwitchListTile.adaptive(
-              title: Text(L10n.of(context)!.spaceIsPublic),
+              contentPadding: const EdgeInsets.symmetric(horizontal: 32),
+              title: Text(L10n.of(context).spaceIsPublic),
               value: controller.publicGroup,
               onChanged: controller.setPublicGroup,
             ),
             ListTile(
+              contentPadding: const EdgeInsets.symmetric(horizontal: 32),
               trailing: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Icon(Icons.info_outlined),
               ),
-              subtitle: Text(L10n.of(context)!.newSpaceDescription),
+              subtitle: Text(L10n.of(context).newSpaceDescription),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -78,16 +80,7 @@ class NewSpaceView extends StatelessWidget {
                       controller.loading ? null : controller.submitAction,
                   child: controller.loading
                       ? const LinearProgressIndicator()
-                      : Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                L10n.of(context)!.createNewSpace,
-                              ),
-                            ),
-                            Icon(Icons.adaptive.arrow_forward_outlined),
-                          ],
-                        ),
+                      : Text(L10n.of(context).createNewSpace),
                 ),
               ),
             ),

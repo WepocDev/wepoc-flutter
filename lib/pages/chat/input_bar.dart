@@ -221,11 +221,12 @@ class InputBar extends StatelessWidget {
     Map<String, String?> suggestion,
     Client? client,
   ) {
+    final theme = Theme.of(context);
     const size = 30.0;
     const padding = EdgeInsets.all(4.0);
     if (suggestion['type'] == 'command') {
       final command = suggestion['name']!;
-      final hint = commandHint(L10n.of(context)!, command);
+      final hint = commandHint(L10n.of(context), command);
       return Tooltip(
         message: hint,
         waitDuration: const Duration(days: 1), // don't show on hover
@@ -242,7 +243,7 @@ class InputBar extends StatelessWidget {
                 hint,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodySmall,
+                style: theme.textTheme.bodySmall,
               ),
             ],
           ),

@@ -16,12 +16,13 @@ class DevicesSettingsView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         leading: const Center(child: BackButton()),
-        title: Text(L10n.of(context)!.devices),
+        title: Text(L10n.of(context).devices),
       ),
       body: MaxWidthBody(
         child: FutureBuilder<bool>(
           future: controller.loadUserDevices(context),
           builder: (BuildContext context, snapshot) {
+            final theme = Theme.of(context);
             if (snapshot.hasError) {
               return Center(
                 child: Column(
@@ -47,6 +48,19 @@ class DevicesSettingsView extends StatelessWidget {
                   return Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      if (controller.chatBackupEnabled == false)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: ListTile(
+                            leading: const CircleAvatar(
+                              child: Icon(Icons.info_outlined),
+                            ),
+                            subtitle: Text(
+                              L10n.of(context)
+                                  .noticeChatBackupDeviceVerification,
+                            ),
+                          ),
+                        ),
                       if (controller.thisDevice != null) ...[
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -55,10 +69,10 @@ class DevicesSettingsView extends StatelessWidget {
                           ),
                           alignment: Alignment.centerLeft,
                           child: Text(
-                            L10n.of(context)!.thisDevice,
+                            L10n.of(context).thisDevice,
                             style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Theme.of(context).colorScheme.primary,
+                              color: theme.colorScheme.primary,
                             ),
                             textAlign: TextAlign.left,
                           ),
@@ -82,27 +96,18 @@ class DevicesSettingsView extends StatelessWidget {
                             width: double.infinity,
                             child: TextButton.icon(
                               label: Text(
-                                controller.errorDeletingDevices ??
-                                    L10n.of(context)!.removeAllOtherDevices,
+                                L10n.of(context).removeAllOtherDevices,
                               ),
                               style: TextButton.styleFrom(
-                                foregroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .onErrorContainer,
-                                backgroundColor: Theme.of(context)
-                                    .colorScheme
-                                    .errorContainer,
+                                foregroundColor:
+                                    theme.colorScheme.onErrorContainer,
+                                backgroundColor:
+                                    theme.colorScheme.errorContainer,
                               ),
-                              icon: controller.loadingDeletingDevices
-                                  ? const CircularProgressIndicator.adaptive(
-                                      strokeWidth: 2,
-                                    )
-                                  : const Icon(Icons.delete_outline),
-                              onPressed: controller.loadingDeletingDevices
-                                  ? null
-                                  : () => controller.removeDevicesAction(
-                                        controller.notThisDevice,
-                                      ),
+                              icon: const Icon(Icons.delete_outline),
+                              onPressed: () => controller.removeDevicesAction(
+                                controller.notThisDevice,
+                              ),
                             ),
                           ),
                         )
@@ -110,7 +115,7 @@ class DevicesSettingsView extends StatelessWidget {
                         Center(
                           child: Padding(
                             padding: const EdgeInsets.all(16.0),
-                            child: Text(L10n.of(context)!.noOtherDevicesFound),
+                            child: Text(L10n.of(context).noOtherDevicesFound),
                           ),
                         ),
                     ],

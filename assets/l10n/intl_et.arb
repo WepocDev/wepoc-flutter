@@ -2271,7 +2271,7 @@
   "@noOtherDevicesFound": {},
   "noBackupWarning": "Hoiatus! Kui sa ei lülita sisse vestluse varundust, siis sul puudub hiljem ligipääs krüptitud sõnumitele. Me tungivalt soovitame, et palun lülita vestluse varundamine sisse enne väljalogimist.",
   "@noBackupWarning": {},
-  "fileIsTooBigForServer": "Serveri seadistuste alusel on see fail saatmiseks liiga suur.",
+  "fileIsTooBigForServer": "Saatmine ei õnnestu! Serveri vaid kuni {max} suurusega manuseid.",
   "@fileIsTooBigForServer": {},
   "fileHasBeenSavedAt": "Fail on salvestatud kausta: {path}",
   "@fileHasBeenSavedAt": {
@@ -2772,5 +2772,61 @@
   "changeTheChatPermissions": "Muuda vestluse õigusi",
   "@changeTheChatPermissions": {},
   "changeTheDescriptionOfTheGroup": "Muuda vestluse kirjeldust",
-  "@changeTheDescriptionOfTheGroup": {}
+  "@changeTheDescriptionOfTheGroup": {},
+  "chatPermissionsDescription": "Määra erinevatele kasutajatele selles vestluses vajalikud õigused. Tüüpiliselt on need 0, 50 ja 100 (vastavalt kasutajad, moderaatorid ja peakasutajad), kuid igasugused vahepealsed variatsioonid on ka võimalikud.",
+  "@chatPermissionsDescription": {},
+  "invitedBy": "📩 Kutsujaks {user}",
+  "@invitedBy": {
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "updateInstalled": "🎉 Versiooniuuendus {version} on paigaldatud!",
+  "@updateInstalled": {
+    "type": "text",
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "changelog": "Muudatuste logi",
+  "@changelog": {},
+  "sendCanceled": "Saatmine on katkestatud",
+  "@sendCanceled": {},
+  "noChatsFoundHere": "Siin ei leidu veel ühtegi vestlust. Alusta uut vestlust klõpsides allpool asuvat nuppu. ⤵️",
+  "@noChatsFoundHere": {},
+  "loginWithMatrixId": "Logi sisse Matrix-ID alusel",
+  "@loginWithMatrixId": {},
+  "discoverHomeservers": "Leia koduservereid",
+  "@discoverHomeservers": {},
+  "whatIsAHomeserver": "Mis on koduserver?",
+  "@whatIsAHomeserver": {},
+  "homeserverDescription": "Sarnaselt e-postiteenuse pakkujale on kõik sinu sõnumid salvestatud koduserveris. Sa võid valida sellise koduserveri, nagu sulle meeldib ja nad kõik suudavad teiste koduserveritega suhelda. Lisateavet leiad veebisaidist https://matrix.org.",
+  "@homeserverDescription": {},
+  "doesNotSeemToBeAValidHomeserver": "Ei tundu olema ühilduv koduserver. Kas võrguaadress on ikka õige?",
+  "@doesNotSeemToBeAValidHomeserver": {},
+  "prepareSendingAttachment": "Valmistume manuse saatmiseks...",
+  "@prepareSendingAttachment": {},
+  "generatingVideoThumbnail": "Loome video pisipilti...",
+  "@generatingVideoThumbnail": {},
+  "compressVideo": "Pakime videot väiksemaks...",
+  "@compressVideo": {},
+  "sendingAttachmentCountOfCount": "Saadame manust: {index} pikkusega {length}...",
+  "@sendingAttachmentCountOfCount": {
+    "type": "integer",
+    "placeholders": {
+      "index": {},
+      "length": {}
+    }
+  },
+  "serverLimitReached": "Serveri poolt lubatud ülempiir on käes. Ootame {seconds} sekundit...",
+  "@serverLimitReached": {
+    "type": "integer",
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "sendingAttachment": "Saadame manust...",
+  "@sendingAttachment": {},
+  "calculatingFileSize": "Arvutame faili suurust...",
+  "@calculatingFileSize": {}
 }

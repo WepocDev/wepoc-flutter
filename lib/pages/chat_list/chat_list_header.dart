@@ -19,6 +19,8 @@ class ChatListHeader extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final selectMode = controller.selectMode;
 
     return SliverAppBar(
@@ -33,14 +35,14 @@ class ChatListHeader extends StatelessWidget implements PreferredSizeWidget {
       leading: selectMode == SelectMode.normal
           ? null
           : IconButton(
-              tooltip: L10n.of(context)!.cancel,
+              tooltip: L10n.of(context).cancel,
               icon: const Icon(Icons.close_outlined),
               onPressed: controller.cancelAction,
-              color: Theme.of(context).colorScheme.primary,
+              color: theme.colorScheme.primary,
             ),
       title: selectMode == SelectMode.share
           ? Text(
-              L10n.of(context)!.share,
+              L10n.of(context).share,
               key: const ValueKey(SelectMode.share),
             )
           : TextField(
@@ -52,31 +54,31 @@ class ChatListHeader extends StatelessWidget implements PreferredSizeWidget {
                 globalSearch: globalSearch,
               ),
               decoration: InputDecoration(
-                fillColor: Theme.of(context).colorScheme.secondaryContainer,
+                filled: true,
+                fillColor: theme.colorScheme.secondaryContainer,
                 border: OutlineInputBorder(
                   borderSide: BorderSide.none,
                   borderRadius: BorderRadius.circular(99),
                 ),
                 contentPadding: EdgeInsets.zero,
-                hintText: L10n.of(context)!.searchChatsRooms,
+                hintText: L10n.of(context).searchChatsRooms,
                 hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                  color: theme.colorScheme.onPrimaryContainer,
                   fontWeight: FontWeight.normal,
                 ),
                 floatingLabelBehavior: FloatingLabelBehavior.never,
                 prefixIcon: controller.isSearchMode
                     ? IconButton(
-                        tooltip: L10n.of(context)!.cancel,
+                        tooltip: L10n.of(context).cancel,
                         icon: const Icon(Icons.close_outlined),
                         onPressed: controller.cancelSearch,
-                        color: Theme.of(context).colorScheme.onPrimaryContainer,
+                        color: theme.colorScheme.onPrimaryContainer,
                       )
                     : IconButton(
                         onPressed: controller.startSearch,
                         icon: Icon(
                           Icons.search_outlined,
-                          color:
-                              Theme.of(context).colorScheme.onPrimaryContainer,
+                          color: theme.colorScheme.onPrimaryContainer,
                         ),
                       ),
                 suffixIcon: controller.isSearchMode && globalSearch

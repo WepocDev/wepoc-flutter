@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 
-import 'package:file_picker/file_picker.dart';
-import 'package:future_loading_dialog/future_loading_dialog.dart';
-
 import 'package:fluffychat/config/app_config.dart';
 import 'package:fluffychat/config/setting_keys.dart';
 import 'package:fluffychat/utils/account_config.dart';
-import 'package:fluffychat/widgets/app_lock.dart';
+import 'package:fluffychat/utils/file_selector.dart';
+import 'package:fluffychat/widgets/future_loading_dialog.dart';
 import 'package:fluffychat/widgets/theme_builder.dart';
 import '../../widgets/matrix.dart';
 import 'settings_style_view.dart';
@@ -26,20 +24,18 @@ class SettingsStyleController extends State<SettingsStyle> {
 
   void setWallpaper() async {
     final client = Matrix.of(context).client;
-    final picked = await AppLock.of(context).pauseWhile(
-      FilePicker.platform.pickFiles(
-        type: FileType.image,
-        withData: true,
-      ),
+    final picked = await selectFiles(
+      context,
+      type: FileSelectorType.images,
     );
-    final pickedFile = picked?.files.firstOrNull;
+    final pickedFile = picked.firstOrNull;
     if (pickedFile == null) return;
 
     await showFutureLoadingDialog(
       context: context,
       future: () async {
         final url = await client.uploadContent(
-          pickedFile.bytes!,
+          await pickedFile.readAsBytes(),
           filename: pickedFile.name,
         );
         await client.updateApplicationAccountConfig(
