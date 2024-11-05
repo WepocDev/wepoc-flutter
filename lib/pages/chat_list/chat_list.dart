@@ -121,6 +121,18 @@ class ChatListController extends State<ChatList>
         _activeSpaceId = null;
       });
 
+  int get selectedIndex {
+    switch (activeFilter) {
+      case ActiveFilter.allChats:
+      case ActiveFilter.messages:
+        return 0;
+      case ActiveFilter.spaces:
+        return 1;
+      default:
+        return -1;
+    }
+  }
+
   void onChatTap(Room room) async {
     if (room.membership == Membership.invite) {
       final inviterId =
@@ -233,6 +245,12 @@ class ChatListController extends State<ChatList>
     }
 
     context.go('/rooms/${room.id}');
+  }
+
+  void onDestinationSelected(int? i) {
+    if (i == 1) {
+      context.go('/landing');
+    }
   }
 
   bool Function(Room) getRoomFilterByActiveFilter(ActiveFilter activeFilter) {
