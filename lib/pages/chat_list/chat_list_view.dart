@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:badges/badges.dart';
+import 'package:fluffychat/widgets/unread_rooms_badge.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 import 'package:keyboard_shortcuts/keyboard_shortcuts.dart';
@@ -20,6 +22,29 @@ class ChatListView extends StatelessWidget {
   final ChatListController controller;
 
   const ChatListView(this.controller, {super.key});
+  List<NavigationDestination> getNavigationDestinations(BuildContext context) {
+    final badgePosition = BadgePosition.topEnd(top: -12, end: -8);
+    return [
+      NavigationDestination(
+        icon: UnreadRoomsBadge(
+          badgePosition: badgePosition,
+          filter: controller.getRoomFilterByActiveFilter(ActiveFilter.allChats),
+          child: const Icon(Icons.chat_outlined),
+        ),
+        selectedIcon: UnreadRoomsBadge(
+          badgePosition: badgePosition,
+          filter: controller.getRoomFilterByActiveFilter(ActiveFilter.allChats),
+          child: const Icon(Icons.chat),
+        ),
+        label: L10n.of(context)!.chats,
+      ),
+      const NavigationDestination(
+        icon: Icon(Icons.workspaces_outlined),
+        selectedIcon: Icon(Icons.workspaces),
+        label: 'Landing',
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -138,6 +163,17 @@ class ChatListView extends StatelessWidget {
                   behavior: HitTestBehavior.translucent,
                   child: Scaffold(
                     body: ChatListViewBody(controller),
+                    bottomNavigationBar: NavigationBar(
+                      elevation: 4,
+                      labelBehavior:
+                          NavigationDestinationLabelBehavior.alwaysShow,
+                      shadowColor: Theme.of(context).colorScheme.onSurface,
+                      backgroundColor: Theme.of(context).colorScheme.surface,
+                      surfaceTintColor: Theme.of(context).colorScheme.surface,
+                      selectedIndex: controller.selectedIndex,
+                      onDestinationSelected: controller.onDestinationSelected,
+                      destinations: getNavigationDestinations(context),
+                    ),
                     floatingActionButton: KeyBoardShortcuts(
                       keysToPress: {
                         LogicalKeyboardKey.controlLeft,
