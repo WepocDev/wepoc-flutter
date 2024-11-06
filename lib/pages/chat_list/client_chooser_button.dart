@@ -58,6 +58,16 @@ class ClientChooserButton extends StatelessWidget {
           ],
         ),
       ),
+      const PopupMenuItem(
+        value: SettingsAction.benefits,
+        child: Row(
+          children: [
+            Icon(Icons.star),
+            SizedBox(width: 18),
+            Text('Benefits'),
+          ],
+        ),
+      ),
       PopupMenuItem(
         value: SettingsAction.invite,
         child: Row(
@@ -275,6 +285,9 @@ class ClientChooserButton extends StatelessWidget {
         case SettingsAction.setStatus:
           controller.setStatus();
           break;
+        case SettingsAction.benefits:
+          context.go('/benefits');
+          break;
       }
     }
   }
@@ -354,6 +367,7 @@ enum SettingsAction {
   newGroup,
   newSpace,
   setStatus,
+  benefits,
   invite,
   settings,
   archive,
