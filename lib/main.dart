@@ -37,7 +37,6 @@ void main() async {
     }
 
     if (configuration != null) {
-      // Set up RC
       await Purchases.setDebugLogsEnabled(true);
       configuration.usesStoreKit2IfAvailable = false;
       await Purchases.configure(configuration);
