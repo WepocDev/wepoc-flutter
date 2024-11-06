@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -59,6 +60,13 @@ class _BenefitsViewState extends State<BenefitsView> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Subscription Benefits'),
+        leading: Center(
+          child: CloseButton(
+            onPressed: () {
+              context.push('/rooms');
+            },
+          ),
+        ),
         backgroundColor: Colors.transparent,
       ),
       body: Padding(
