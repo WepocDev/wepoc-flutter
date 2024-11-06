@@ -27,9 +27,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   try {
-    // Set up RC
-    await Purchases.setDebugLogsEnabled(true);
-
     PurchasesConfiguration? configuration;
     if (Platform.isAndroid) {
       configuration = PurchasesConfiguration(
@@ -40,6 +37,8 @@ void main() async {
     }
 
     if (configuration != null) {
+      // Set up RC
+      await Purchases.setDebugLogsEnabled(true);
       configuration.usesStoreKit2IfAvailable = false;
       await Purchases.configure(configuration);
     }
