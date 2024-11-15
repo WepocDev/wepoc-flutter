@@ -1,4 +1,7 @@
 import 'dart:convert';
+import 'package:fluffychat/pages/benefits/qr_code_image.dart';
+import 'package:fluffychat/pages/chat/chat.dart';
+import 'package:fluffychat/widgets/matrix.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
@@ -45,6 +48,7 @@ class _BenefitsViewState extends State<BenefitsView> {
           return {
             'title': item['Title'] ?? 'No title',
             'description': item['Description'] ?? 'No description',
+            'link': item['link'] ?? '',
           };
         }).toList();
 
@@ -57,6 +61,8 @@ class _BenefitsViewState extends State<BenefitsView> {
 
   @override
   Widget build(BuildContext context) {
+    final userId = Matrix.of(context).client.userID ?? '';
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Subscription Benefits'),
@@ -89,24 +95,40 @@ class _BenefitsViewState extends State<BenefitsView> {
                       itemCount: benefits.length,
                       itemBuilder: (context, index) {
                         final benefit = benefits[index];
-                        return Card(
-                          elevation: 4,
-                          margin: EdgeInsets.symmetric(vertical: 8),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                          ),
-                          child: ListTile(
-                            leading: Icon(Icons.star,
-                                color: Theme.of(context).colorScheme.primary),
-                            title: Text(
-                              benefit['title']!,
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: Theme.of(context).colorScheme.primary,
+                        return GestureDetector(
+                          onTap: () async {
+                            final link = benefit['link'] ?? '';
+
+                            print('benefit $benefit');
+                            if (link == '' || userId == '') return;
+
+                            await showDialog(
+                              context: context,
+                              builder: (_) => QRCodeImage(
+                                userId: userId,
+                                link: link,
                               ),
+                            );
+                          },
+                          child: Card(
+                            elevation: 4,
+                            margin: EdgeInsets.symmetric(vertical: 8),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
                             ),
-                            subtitle: Text(benefit['description']!),
+                            child: ListTile(
+                              leading: Icon(Icons.star,
+                                  color: Theme.of(context).colorScheme.primary),
+                              title: Text(
+                                benefit['title']!,
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                              subtitle: Text(benefit['description']!),
+                            ),
                           ),
                         );
                       },
