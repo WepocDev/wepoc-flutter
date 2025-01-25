@@ -1186,7 +1186,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "participant": "Mitglieder",
+  "participant": "Mitglied",
   "@participant": {
     "type": "text",
     "placeholders": {}
@@ -2800,7 +2800,7 @@
   "@loginWithMatrixId": {},
   "discoverHomeservers": "Server suchen",
   "@discoverHomeservers": {},
-  "homeserverDescription": "Alle deine Daten werden auf dem Homeserver gespeichert, so wie bei einem Email Anbieter. Du kannst aussuchen, welchen Homeserver du benutzen willst und kannst trotzdem mit allen kommunizieren. Erfahre mehr auf https:/matrix.org.",
+  "homeserverDescription": "Alle deine Daten werden auf einem Homeserver gespeichert, so wie bei einem E-Mail Anbieter. Du kannst aussuchen, welchen Homeserver du benutzen willst und kannst trotzdem mit allen kommunizieren. Erfahre mehr auf https://matrix.org.",
   "@homeserverDescription": {},
   "sendingAttachment": "Anhang wird gesendet ...",
   "@sendingAttachment": {},
@@ -2833,5 +2833,69 @@
     "placeholders": {
       "max": {}
     }
-  }
+  },
+  "oneOfYourDevicesIsNotVerified": "Eines deiner Geräte ist nicht verifiziert",
+  "@oneOfYourDevicesIsNotVerified": {},
+  "noticeChatBackupDeviceVerification": "Hinweis: Wenn du alle deine Geräte mit dem Chat-Backup verbindest, sind sie automatisch verifiziert.",
+  "@noticeChatBackupDeviceVerification": {},
+  "setWallpaper": "Hintergrund ändern",
+  "@setWallpaper": {},
+  "opacity": "Deckkraft:",
+  "@opacity": {},
+  "welcomeText": "Hey Hey 👋 Das ist FluffyChat. Du kannst sich bei jedem Homeserver anmelden, der mit https://matrix.org kompatibel ist. Und dann mit jedem chatten. Das hier ist ein riesiges dezentrales Nachrichtennetzwerk!",
+  "@welcomeText": {},
+  "blur": "Verwischen:",
+  "@blur": {},
+  "manageAccount": "Konto verwalten",
+  "@manageAccount": {},
+  "continueText": "Fortfahren",
+  "@continueText": {},
+  "noContactInformationProvided": "Der Server stellt keine gültigen Kontaktinformationen bereit",
+  "@noContactInformationProvided": {},
+  "contactServerAdmin": "Serveradministrator kontaktieren",
+  "@contactServerAdmin": {},
+  "name": "Name",
+  "@name": {},
+  "version": "Version",
+  "@version": {},
+  "website": "Website",
+  "@website": {},
+  "aboutHomeserver": "Über {homeserver}",
+  "@aboutHomeserver": {
+    "type": "text",
+    "placeholders": {
+      "homeserver": {}
+    }
+  },
+  "sendUncompressed": "Unkomprimiert senden",
+  "@sendUncompressed": {},
+  "boldText": "Fetter Text",
+  "@boldText": {},
+  "invalidUrl": "Ungültige URL",
+  "@invalidUrl": {},
+  "addLink": "Link hinzufügen",
+  "@addLink": {},
+  "unableToJoinChat": "Chat kann nicht beigetreten werden. Möglicherweise hat die Gegenseite das Gespräch bereits beendet.",
+  "@unableToJoinChat": {},
+  "italicText": "Kursiver Text",
+  "@italicText": {},
+  "strikeThrough": "Durchgestrichen",
+  "@strikeThrough": {},
+  "pleaseFillOut": "Bitte ausfüllen",
+  "@pleaseFillOut": {},
+  "sendImages": "Sende {count} Bilder",
+  "@sendImages": {
+    "type": "text",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "contactServerSecurity": "Server-Sicherheit kontaktieren",
+  "@contactServerSecurity": {},
+  "compress": "Komprimieren",
+  "@compress": {},
+  "supportPage": "Support-Seite",
+  "@supportPage": {},
+  "serverInformation": "Server-Informationen:",
+  "@serverInformation": {}
 }

@@ -8,6 +8,7 @@ import 'package:swipe_to_action/swipe_to_action.dart';
 import 'package:fluffychat/config/themes.dart';
 import 'package:fluffychat/pages/chat/events/room_creation_state_event.dart';
 import 'package:fluffychat/utils/date_time_extension.dart';
+import 'package:fluffychat/utils/file_description.dart';
 import 'package:fluffychat/utils/string_color.dart';
 import 'package:fluffychat/widgets/avatar.dart';
 import 'package:fluffychat/widgets/matrix.dart';
@@ -34,7 +35,7 @@ class Message extends StatelessWidget {
   final bool highlightMarker;
   final bool animateIn;
   final void Function()? resetAnimateIn;
-  final Color? avatarPresenceBackgroundColor;
+  final bool wallpaperMode;
 
   const Message(
     this.event, {
@@ -52,7 +53,7 @@ class Message extends StatelessWidget {
     this.highlightMarker = false,
     this.animateIn = false,
     this.resetAnimateIn,
-    this.avatarPresenceBackgroundColor,
+    this.wallpaperMode = false,
     super.key,
   });
 
@@ -106,8 +107,11 @@ class Message extends StatelessWidget {
         previousEvent!.senderId == event.senderId &&
         previousEvent!.originServerTs.sameEnvironment(event.originServerTs);
 
-    final textColor =
-        ownMessage ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface;
+    final textColor = ownMessage
+        ? theme.brightness == Brightness.light
+            ? theme.colorScheme.onPrimary
+            : theme.colorScheme.onPrimaryContainer
+        : theme.colorScheme.onSurface;
     final rowMainAxisAlignment =
         ownMessage ? MainAxisAlignment.end : MainAxisAlignment.start;
 
@@ -122,12 +126,18 @@ class Message extends StatelessWidget {
       bottomRight:
           ownMessage && previousEventSameSender ? hardCorner : roundedCorner,
     );
-    final noBubble = {
-          MessageTypes.Video,
-          MessageTypes.Image,
-          MessageTypes.Sticker,
-        }.contains(event.messageType) &&
-        !event.redacted;
+    final noBubble = ({
+              MessageTypes.Video,
+              MessageTypes.Image,
+              MessageTypes.Sticker,
+            }.contains(event.messageType) &&
+            event.fileDescription == null &&
+            !event.redacted) ||
+        (event.messageType == MessageTypes.Text &&
+            event.relationshipType == null &&
+            event.onlyEmotes &&
+            event.numberEmotes > 0 &&
+            event.numberEmotes <= 3);
     final noPadding = {
       MessageTypes.File,
       MessageTypes.Audio,
@@ -136,7 +146,9 @@ class Message extends StatelessWidget {
     if (ownMessage) {
       color = displayEvent.status.isError
           ? Colors.redAccent
-          : theme.colorScheme.primary;
+          : theme.brightness == Brightness.light
+              ? theme.colorScheme.primary
+              : theme.colorScheme.primaryContainer;
     }
 
     final resetAnimateIn = this.resetAnimateIn;
@@ -225,7 +237,7 @@ class Message extends StatelessWidget {
                                 name: user.calcDisplayname(),
                                 presenceUserId: user.stateKey,
                                 presenceBackgroundColor:
-                                    avatarPresenceBackgroundColor,
+                                    wallpaperMode ? Colors.transparent : null,
                                 onTap: () => onAvatarTab(event),
                               );
                             },
@@ -260,6 +272,18 @@ class Message extends StatelessWidget {
                                                     ? displayname.color
                                                     : displayname
                                                         .lightColorText),
+                                                shadows: !wallpaperMode
+                                                    ? null
+                                                    : [
+                                                        const Shadow(
+                                                          offset: Offset(
+                                                            0.0,
+                                                            0.0,
+                                                          ),
+                                                          blurRadius: 3,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ],
                                               ),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -280,21 +304,21 @@ class Message extends StatelessWidget {
                                   child: AnimatedOpacity(
                                     opacity: animateIn
                                         ? 0
-                                        : event.redacted ||
-                                                event.messageType ==
+                                        : event.messageType ==
                                                     MessageTypes.BadEncrypted ||
                                                 event.status.isSending
                                             ? 0.5
                                             : 1,
                                     duration: FluffyThemes.animationDuration,
                                     curve: FluffyThemes.animationCurve,
-                                    child: Material(
-                                      color:
-                                          noBubble ? Colors.transparent : color,
-                                      clipBehavior: Clip.antiAlias,
-                                      shape: RoundedRectangleBorder(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: noBubble
+                                            ? Colors.transparent
+                                            : color,
                                         borderRadius: borderRadius,
                                       ),
+                                      clipBehavior: Clip.antiAlias,
                                       child: Container(
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(
@@ -374,6 +398,7 @@ class Message extends StatelessWidget {
                                               textColor: textColor,
                                               onInfoTab: onInfoTab,
                                               borderRadius: borderRadius,
+                                              timeline: timeline,
                                             ),
                                             if (event.hasAggregatedEvents(
                                               timeline,
@@ -438,18 +463,23 @@ class Message extends StatelessWidget {
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 4.0),
-                  child: Text(
-                    event.originServerTs.localizedTime(context),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12 * AppConfig.fontSizeFactor,
-                      color: theme.colorScheme.secondary,
-                      shadows: [
-                        Shadow(
-                          color: theme.colorScheme.surface,
-                          blurRadius: 3,
+                  child: Material(
+                    borderRadius:
+                        BorderRadius.circular(AppConfig.borderRadius * 2),
+                    color: theme.colorScheme.surface.withAlpha(128),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 2.0,
+                      ),
+                      child: Text(
+                        event.originServerTs.localizedTime(context),
+                        style: TextStyle(
+                          fontSize: 12 * AppConfig.fontSizeFactor,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.secondary,
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -474,7 +504,8 @@ class Message extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Divider(color: theme.colorScheme.secondary),
+                  child:
+                      Divider(color: theme.colorScheme.surfaceContainerHighest),
                 ),
                 Container(
                   margin: const EdgeInsets.symmetric(
@@ -483,24 +514,23 @@ class Message extends StatelessWidget {
                   ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.circular(AppConfig.borderRadius / 3),
+                    color: theme.colorScheme.surface.withAlpha(128),
                   ),
                   child: Text(
                     L10n.of(context).readUpToHere,
                     style: TextStyle(
-                      fontWeight: FontWeight.bold,
                       fontSize: 12 * AppConfig.fontSizeFactor,
-                      color: theme.colorScheme.secondary,
-                      shadows: [
-                        Shadow(
-                          color: theme.colorScheme.surface,
-                          blurRadius: 3,
-                        ),
-                      ],
                     ),
                   ),
                 ),
                 Expanded(
-                  child: Divider(color: theme.colorScheme.secondary),
+                  child:
+                      Divider(color: theme.colorScheme.surfaceContainerHighest),
                 ),
               ],
             ),

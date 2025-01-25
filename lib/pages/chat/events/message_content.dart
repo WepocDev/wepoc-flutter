@@ -28,11 +28,13 @@ class MessageContent extends StatelessWidget {
   final Color textColor;
   final void Function(Event)? onInfoTab;
   final BorderRadius borderRadius;
+  final Timeline timeline;
 
   const MessageContent(
     this.event, {
     this.onInfoTab,
     super.key,
+    required this.timeline,
     required this.textColor,
     required this.borderRadius,
   });
@@ -137,6 +139,8 @@ class MessageContent extends StatelessWidget {
               height: height,
               fit: fit,
               borderRadius: borderRadius,
+              timeline: timeline,
+              textColor: textColor,
             );
           case CuteEventContent.eventType:
             return CuteContent(event);
@@ -156,7 +160,7 @@ class MessageContent extends StatelessWidget {
             }
             return MessageDownloadContent(event, textColor);
           case MessageTypes.Video:
-            return EventVideoPlayer(event);
+            return EventVideoPlayer(event, textColor: textColor);
           case MessageTypes.File:
             return MessageDownloadContent(event, textColor);
 
@@ -242,7 +246,7 @@ class MessageContent extends StatelessWidget {
                             reason,
                           ),
                     icon: '🗑️',
-                    textColor: buttonTextColor,
+                    textColor: buttonTextColor.withAlpha(128),
                     onPressed: () => onInfoTab!(event),
                     fontSize: fontSize,
                   );
@@ -251,7 +255,7 @@ class MessageContent extends StatelessWidget {
             }
             final bigEmotes = event.onlyEmotes &&
                 event.numberEmotes > 0 &&
-                event.numberEmotes <= 10;
+                event.numberEmotes <= 3;
             return Linkify(
               text: event.calcLocalizedBodyFallback(
                 MatrixLocals(L10n.of(context)),
@@ -259,13 +263,13 @@ class MessageContent extends StatelessWidget {
               ),
               style: TextStyle(
                 color: textColor,
-                fontSize: bigEmotes ? fontSize * 3 : fontSize,
+                fontSize: bigEmotes ? fontSize * 5 : fontSize,
                 decoration: event.redacted ? TextDecoration.lineThrough : null,
               ),
               options: const LinkifyOptions(humanize: false),
               linkStyle: TextStyle(
                 color: textColor.withAlpha(150),
-                fontSize: bigEmotes ? fontSize * 3 : fontSize,
+                fontSize: fontSize,
                 decoration: TextDecoration.underline,
                 decorationColor: textColor.withAlpha(150),
               ),

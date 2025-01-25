@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 
 import 'package:badges/badges.dart';
@@ -15,6 +17,7 @@ import 'package:fluffychat/pages/chat/pinned_events.dart';
 import 'package:fluffychat/pages/chat/reactions_picker.dart';
 import 'package:fluffychat/pages/chat/reply_display.dart';
 import 'package:fluffychat/utils/account_config.dart';
+import 'package:fluffychat/utils/localized_exception_extension.dart';
 import 'package:fluffychat/widgets/chat_settings_popup_menu.dart';
 import 'package:fluffychat/widgets/connection_status_header.dart';
 import 'package:fluffychat/widgets/future_loading_dialog.dart';
@@ -133,6 +136,7 @@ class ChatView extends StatelessWidget {
       showFutureLoadingDialog(
         context: context,
         future: () => controller.room.join(),
+        exceptionContext: ExceptionContext.joinRoom,
       );
     }
     final bottomSheetPadding = FluffyThemes.isColumnMode(context) ? 16.0 : 8.0;
@@ -262,14 +266,21 @@ class ChatView extends StatelessWidget {
                   children: <Widget>[
                     if (accountConfig.wallpaperUrl != null)
                       Opacity(
-                        opacity: accountConfig.wallpaperOpacity ?? 1,
-                        child: MxcImage(
-                          uri: accountConfig.wallpaperUrl,
-                          fit: BoxFit.cover,
-                          isThumbnail: true,
-                          width: FluffyThemes.columnWidth * 4,
-                          height: FluffyThemes.columnWidth * 4,
-                          placeholder: (_) => Container(),
+                        opacity: accountConfig.wallpaperOpacity ?? 0.5,
+                        child: ImageFiltered(
+                          imageFilter: ui.ImageFilter.blur(
+                            sigmaX: accountConfig.wallpaperBlur ?? 0.0,
+                            sigmaY: accountConfig.wallpaperBlur ?? 0.0,
+                          ),
+                          child: MxcImage(
+                            cacheKey: accountConfig.wallpaperUrl.toString(),
+                            uri: accountConfig.wallpaperUrl,
+                            fit: BoxFit.cover,
+                            height: MediaQuery.of(context).size.height,
+                            width: MediaQuery.of(context).size.width,
+                            isThumbnail: false,
+                            placeholder: (_) => Container(),
+                          ),
                         ),
                       ),
                     SafeArea(
@@ -278,20 +289,7 @@ class ChatView extends StatelessWidget {
                           Expanded(
                             child: GestureDetector(
                               onTap: controller.clearSingleSelectedEvent,
-                              child: Builder(
-                                builder: (context) {
-                                  if (controller.timeline == null) {
-                                    return const Center(
-                                      child: CircularProgressIndicator.adaptive(
-                                        strokeWidth: 2,
-                                      ),
-                                    );
-                                  }
-                                  return ChatEventList(
-                                    controller: controller,
-                                  );
-                                },
-                              ),
+                              child: ChatEventList(controller: controller),
                             ),
                           ),
                           if (controller.room.canSendDefaultMessages &&
@@ -366,7 +364,7 @@ class ChatView extends StatelessWidget {
                     ),
                     if (controller.dragging)
                       Container(
-                        color: theme.scaffoldBackgroundColor.withOpacity(0.9),
+                        color: theme.scaffoldBackgroundColor.withAlpha(230),
                         alignment: Alignment.center,
                         child: const Icon(
                           Icons.upload_outlined,

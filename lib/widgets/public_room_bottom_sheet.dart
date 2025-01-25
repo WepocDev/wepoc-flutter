@@ -10,6 +10,7 @@ import 'package:fluffychat/utils/url_launcher.dart';
 import 'package:fluffychat/widgets/avatar.dart';
 import 'package:fluffychat/widgets/future_loading_dialog.dart';
 import 'package:fluffychat/widgets/matrix.dart';
+import 'package:fluffychat/widgets/qr_code_viewer.dart';
 
 class PublicRoomBottomSheet extends StatelessWidget {
   final String? roomAlias;
@@ -92,23 +93,25 @@ class PublicRoomBottomSheet extends StatelessWidget {
             chunk?.name ?? roomAlias ?? chunk?.roomId ?? 'Unknown',
             overflow: TextOverflow.fade,
           ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_downward_outlined),
-            onPressed: Navigator.of(context, rootNavigator: false).pop,
-            tooltip: L10n.of(context).close,
-          ),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: IconButton(
-                icon: Icon(Icons.adaptive.share_outlined),
-                onPressed: () => FluffyShare.share(
-                  'https://matrix.to/#/${roomAlias ?? chunk?.roomId}',
-                  context,
-                ),
-              ),
+          leading: Center(
+            child: CloseButton(
+              onPressed: Navigator.of(context, rootNavigator: false).pop,
             ),
-          ],
+          ),
+          actions: roomAlias == null
+              ? null
+              : [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: IconButton(
+                      icon: const Icon(Icons.qr_code_rounded),
+                      onPressed: () => showQrCodeViewer(
+                        context,
+                        roomAlias,
+                      ),
+                    ),
+                  ),
+                ],
         ),
         body: FutureBuilder<PublicRoomsChunk>(
           future: _search(),

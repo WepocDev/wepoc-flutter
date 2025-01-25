@@ -33,13 +33,17 @@ class ReplyContent extends StatelessWidget {
     final displayEvent =
         timeline != null ? replyEvent.getDisplayEvent(timeline) : replyEvent;
     final fontSize = AppConfig.messageFontSize * AppConfig.fontSizeFactor;
-    final color = ownMessage
-        ? theme.colorScheme.primaryContainer
-        : theme.colorScheme.primary;
+    final color = theme.brightness == Brightness.dark
+        ? ownMessage
+            ? theme.colorScheme.onTertiaryContainer
+            : theme.colorScheme.onTertiary
+        : ownMessage
+            ? theme.colorScheme.tertiaryContainer
+            : theme.colorScheme.tertiary;
 
     return Material(
       color: backgroundColor ??
-          theme.colorScheme.surface.withOpacity(ownMessage ? 0.2 : 0.33),
+          theme.colorScheme.surface.withAlpha(ownMessage ? 50 : 80),
       borderRadius: borderRadius,
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -56,6 +60,7 @@ class ReplyContent extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 FutureBuilder<User?>(
+                  initialData: displayEvent.senderFromMemoryOrFallback,
                   future: displayEvent.fetchSenderUser(),
                   builder: (context, snapshot) {
                     return Text(
@@ -80,7 +85,7 @@ class ReplyContent extends StatelessWidget {
                   maxLines: 1,
                   style: TextStyle(
                     color: ownMessage
-                        ? theme.colorScheme.onPrimary
+                        ? theme.colorScheme.onTertiary
                         : theme.colorScheme.onSurface,
                     fontSize: fontSize,
                   ),

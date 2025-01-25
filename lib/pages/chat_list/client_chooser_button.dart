@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
-import 'package:keyboard_shortcuts/keyboard_shortcuts.dart';
 import 'package:matrix/matrix.dart';
 
+import 'package:fluffychat/widgets/adaptive_dialogs/show_ok_cancel_alert_dialog.dart';
 import 'package:fluffychat/widgets/avatar.dart';
 import 'package:fluffychat/widgets/matrix.dart';
 import '../../utils/fluffy_share.dart';
@@ -35,16 +33,6 @@ class ClientChooserButton extends StatelessWidget {
             const Icon(Icons.group_add_outlined),
             const SizedBox(width: 18),
             Text(L10n.of(context).createGroup),
-          ],
-        ),
-      ),
-      PopupMenuItem(
-        value: SettingsAction.newSpace,
-        child: Row(
-          children: [
-            const Icon(Icons.workspaces_outlined),
-            const SizedBox(width: 18),
-            Text(L10n.of(context).createNewSpace),
           ],
         ),
       ),
@@ -176,36 +164,10 @@ class ClientChooserButton extends StatelessWidget {
         children: [
           ...List.generate(
             clientCount,
-            (index) => KeyBoardShortcuts(
-              keysToPress: _buildKeyboardShortcut(index + 1),
-              helpLabel: L10n.of(context).switchToAccount(index + 1),
-              onKeysPressed: () => _handleKeyboardShortcut(
-                matrix,
-                index,
-                context,
-              ),
-              child: const SizedBox.shrink(),
-            ),
+            (index) => const SizedBox.shrink(),
           ),
-          KeyBoardShortcuts(
-            keysToPress: {
-              LogicalKeyboardKey.controlLeft,
-              LogicalKeyboardKey.tab,
-            },
-            helpLabel: L10n.of(context).nextAccount,
-            onKeysPressed: () => _nextAccount(matrix, context),
-            child: const SizedBox.shrink(),
-          ),
-          KeyBoardShortcuts(
-            keysToPress: {
-              LogicalKeyboardKey.controlLeft,
-              LogicalKeyboardKey.shiftLeft,
-              LogicalKeyboardKey.tab,
-            },
-            helpLabel: L10n.of(context).previousAccount,
-            onKeysPressed: () => _previousAccount(matrix, context),
-            child: const SizedBox.shrink(),
-          ),
+          const SizedBox.shrink(),
+          const SizedBox.shrink(),
           PopupMenuButton<Object>(
             onSelected: (o) => _clientSelected(o, context),
             itemBuilder: _bundleMenuItems,
@@ -223,17 +185,6 @@ class ClientChooserButton extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  Set<LogicalKeyboardKey>? _buildKeyboardShortcut(int index) {
-    if (index > 0 && index < 10) {
-      return {
-        LogicalKeyboardKey.altLeft,
-        LogicalKeyboardKey(0x00000000030 + index),
-      };
-    } else {
-      return null;
-    }
   }
 
   void _clientSelected(
@@ -260,9 +211,6 @@ class ClientChooserButton extends StatelessWidget {
         case SettingsAction.newGroup:
           context.go('/rooms/newgroup');
           break;
-        case SettingsAction.newSpace:
-          controller.createNewSpace();
-          break;
         case SettingsAction.invite:
           FluffyShare.shareInviteLink(context);
           break;
@@ -278,81 +226,11 @@ class ClientChooserButton extends StatelessWidget {
       }
     }
   }
-
-  void _handleKeyboardShortcut(
-    MatrixState matrix,
-    int index,
-    BuildContext context,
-  ) {
-    final bundles = matrix.accountBundles.keys.toList()
-      ..sort(
-        (a, b) => a!.isValidMatrixId == b!.isValidMatrixId
-            ? 0
-            : a.isValidMatrixId && !b.isValidMatrixId
-                ? -1
-                : 1,
-      );
-    // beginning from end if negative
-    if (index < 0) {
-      var clientCount = 0;
-      matrix.accountBundles
-          .forEach((key, value) => clientCount += value.length);
-      _handleKeyboardShortcut(matrix, clientCount, context);
-    }
-    for (final bundleName in bundles) {
-      final bundle = matrix.accountBundles[bundleName];
-      if (bundle != null) {
-        if (index < bundle.length) {
-          return _clientSelected(bundle[index]!, context);
-        } else {
-          index -= bundle.length;
-        }
-      }
-    }
-    // if index too high, restarting from 0
-    _handleKeyboardShortcut(matrix, 0, context);
-  }
-
-  int? _shortcutIndexOfClient(MatrixState matrix, Client client) {
-    var index = 0;
-
-    final bundles = matrix.accountBundles.keys.toList()
-      ..sort(
-        (a, b) => a!.isValidMatrixId == b!.isValidMatrixId
-            ? 0
-            : a.isValidMatrixId && !b.isValidMatrixId
-                ? -1
-                : 1,
-      );
-    for (final bundleName in bundles) {
-      final bundle = matrix.accountBundles[bundleName];
-      if (bundle == null) return null;
-      if (bundle.contains(client)) {
-        return index + bundle.indexOf(client);
-      } else {
-        index += bundle.length;
-      }
-    }
-    return null;
-  }
-
-  void _nextAccount(MatrixState matrix, BuildContext context) {
-    final client = matrix.client;
-    final lastIndex = _shortcutIndexOfClient(matrix, client);
-    _handleKeyboardShortcut(matrix, lastIndex! + 1, context);
-  }
-
-  void _previousAccount(MatrixState matrix, BuildContext context) {
-    final client = matrix.client;
-    final lastIndex = _shortcutIndexOfClient(matrix, client);
-    _handleKeyboardShortcut(matrix, lastIndex! - 1, context);
-  }
 }
 
 enum SettingsAction {
   addAccount,
   newGroup,
-  newSpace,
   setStatus,
   invite,
   settings,

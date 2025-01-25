@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -110,7 +111,7 @@ class _MxcImageState extends State<MxcImage> {
     }
     try {
       await _load();
-    } catch (_) {
+    } on IOException catch (_) {
       if (!mounted) return;
       await Future.delayed(widget.retryDuration);
       _tryLoad(_);
@@ -140,7 +141,7 @@ class _MxcImageState extends State<MxcImage> {
     return AnimatedCrossFade(
       crossFadeState:
           hasData ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-      duration: FluffyThemes.animationDuration,
+      duration: const Duration(milliseconds: 128),
       firstChild: placeholder(context),
       secondChild: hasData
           ? Image.memory(

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:matrix/matrix.dart';
 
 import 'package:fluffychat/config/app_config.dart';
 import 'package:fluffychat/utils/matrix_sdk_extensions/matrix_locals.dart';
 import 'package:fluffychat/utils/room_status_extension.dart';
+import 'package:fluffychat/widgets/adaptive_dialogs/show_ok_cancel_alert_dialog.dart';
 import 'package:fluffychat/widgets/future_loading_dialog.dart';
 import 'package:fluffychat/widgets/hover_builder.dart';
 import '../../config/themes.dart';
@@ -51,7 +51,7 @@ class ChatListItem extends StatelessWidget {
         okLabel: L10n.of(context).leave,
         cancelLabel: L10n.of(context).cancel,
         message: L10n.of(context).archiveRoomDescription,
-        isDestructiveAction: true,
+        isDestructive: true,
       );
       if (confirmed != OkCancelResult.ok) return false;
       final leaveResult = await showFutureLoadingDialog(
@@ -157,7 +157,12 @@ class ChatListItem extends StatelessWidget {
                             right: 0,
                             child: Avatar(
                               border: space == null
-                                  ? null
+                                  ? room.isSpace
+                                      ? BorderSide(
+                                          width: 1,
+                                          color: theme.dividerColor,
+                                        )
+                                      : null
                                   : BorderSide(
                                       width: 2,
                                       color: backgroundColor ??
@@ -251,11 +256,6 @@ class ChatListItem extends StatelessWidget {
                           ),
                         ),
                       ),
-                    if (room.isSpace)
-                      const Icon(
-                        Icons.arrow_circle_right_outlined,
-                        size: 18,
-                      ),
                   ],
                 ),
                 subtitle: Row(
@@ -305,7 +305,7 @@ class ChatListItem extends StatelessWidget {
                                 )
                               : FutureBuilder(
                                   key: ValueKey(
-                                    '${lastEvent?.eventId}_${lastEvent?.type}',
+                                    '${lastEvent?.eventId}_${lastEvent?.type}_${lastEvent?.redacted}',
                                   ),
                                   future: needLastEventSender
                                       ? lastEvent.calcLocalizedBody(
@@ -339,7 +339,8 @@ class ChatListItem extends StatelessWidget {
                                         : snapshot.data ??
                                             L10n.of(context).emptyChat,
                                     softWrap: false,
-                                    maxLines: 1,
+                                    maxLines:
+                                        room.notificationCount >= 1 ? 2 : 1,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                       fontWeight: unread || room.hasNewMessages

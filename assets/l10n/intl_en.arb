@@ -25,9 +25,12 @@
   "replace": "Replace",
   "@replace": {},
   "about": "About",
-  "@about": {
+  "aboutHomeserver": "About {homeserver}",
+  "@aboutHomeserver": {
     "type": "text",
-    "placeholders": {}
+    "placeholders": {
+      "homeserver": {}
+    }
   },
   "accept": "Accept",
   "@accept": {
@@ -1686,6 +1689,13 @@
     "type": "text",
     "placeholders": {}
   },
+  "sendImages": "Send {count} image",
+  "@sendImages": {
+    "type": "text",
+    "placeholders": {
+      "count": {}
+    }
+  },
   "sendMessages": "Send messages",
   "@sendMessages": {
     "type": "text",
@@ -2788,5 +2798,29 @@
     }
   },
   "oneOfYourDevicesIsNotVerified": "One of your devices is not verified",
-  "noticeChatBackupDeviceVerification": "Note: When you connect all your devices to the chat backup, they are automatically verified."
+  "noticeChatBackupDeviceVerification": "Note: When you connect all your devices to the chat backup, they are automatically verified.",
+  "continueText": "Continue",
+  "welcomeText": "Hey Hey 👋 This is FluffyChat. You can sign in to any homeserver, which is compatible with https://matrix.org. And then chat with anyone. It's a huge decentralized messaging network!",
+  "blur": "Blur:",
+  "opacity": "Opacity:",
+  "setWallpaper": "Set wallpaper",
+  "manageAccount": "Manage account",
+  "noContactInformationProvided": "Server does not provide any valid contact information",
+  "contactServerAdmin": "Contact server admin",
+  "contactServerSecurity": "Contact server security",
+  "supportPage": "Support page",
+  "serverInformation": "Server information:",
+  "name": "Name",
+  "version": "Version",
+  "website": "Website",
+  "compress": "Compress",
+  "boldText": "Bold text",
+  "italicText": "Italic text",
+  "strikeThrough": "Strikethrough",
+  "pleaseFillOut": "Please fill out",
+  "invalidUrl": "Invalid url",
+  "addLink": "Add link",
+  "unableToJoinChat": "Unable to join chat. Maybe the other party has already closed the conversation.",
+  "previous": "Previous",
+  "otherPartyNotLoggedIn": "The other party is currently not logged in and therefore cannot receive messages!"
 }

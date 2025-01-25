@@ -26,7 +26,7 @@
     "type": "text",
     "placeholders": {}
   },
-  "theyMatch": "Tie sakrīt",
+  "theyMatch": "Tās sakrīt",
   "@theyMatch": {
     "type": "text",
     "placeholders": {}
@@ -643,7 +643,7 @@
       "count": {}
     }
   },
-  "noKeyForThisMessage": "Tas var notikt, ja ziņa tika nosūtīta, pirms pieteicies savā kontā šajā ierīcē.\n\nIr arī iespējams, ka sūtītājs noliedza Tavu ierīci vai kaut kas nogāja greizi ar interneta savienojumu.\n\nVai ziņas ir lasāmas citā sesijā? Tad Tu vari pārsūtīt ziņo no tās. Jādodas uz Iestatījumi > Ierīces un jāpārliecinās, ka ierīces viena otru ir apliecinājušas. Kad nākamreiz atvērsi istabu un abas sesijas būs priekšplānā, atslēgas tiks automātiski pārsūtītas.\n\nVai nevēlies zaudēt atslēgas, kad atsakies vai maini ierīces? Jāpārliecinās, ka iestatījumos ir iespējota tērzēšanas rezerves kopija.",
+  "noKeyForThisMessage": "Tā var notikt, ja ziņa tika nosūtīta, pirms pieteicies savā kontā šajā ierīcē.\n\nIr arī iespējams, ka sūtītājs noliedza Tavu ierīci vai kaut kas nogāja greizi ar interneta savienojumu.\n\nVai ziņas ir lasāmas citā sesijā? Tad Tu vari pārsūtīt ziņo no tās. Jādodas uz Iestatījumi > Ierīces un jāpārliecinās, ka ierīces viena otru ir apliecinājušas. Kad nākamreiz atvērsi istabu un abas sesijas būs priekšplānā, atslēgas tiks automātiski pārsūtītas.\n\nVai nevēlies zaudēt atslēgas, kad atsakies vai maini ierīces? Jāpārliecinās, ka iestatījumos ir iespējota tērzēšanu rezerves kopija.",
   "@noKeyForThisMessage": {},
   "enableEncryptionWarning": "Vairs nebūs iespējams atspējot šifrēšanu. Vai tiešām to darīt?",
   "@enableEncryptionWarning": {
@@ -712,7 +712,7 @@
       "supportedVersions": {}
     }
   },
-  "wipeChatBackup": "Notīrīt tērzēšanas rezerves kopiju, lai izveidotu jaunu atkopšanas atslēgu?",
+  "wipeChatBackup": "Notīrīt tērzēšanu rezerves kopiju, lai izveidotu jaunu atkopšanas atslēgu?",
   "@wipeChatBackup": {
     "type": "text",
     "placeholders": {}
@@ -911,9 +911,9 @@
   },
   "storeSecurlyOnThisDevice": "Droši uzglabāt šajā ierīcē",
   "@storeSecurlyOnThisDevice": {},
-  "yourChatBackupHasBeenSetUp": "Tērzēšanas rezerves kopēšana tika iestatīta.",
+  "yourChatBackupHasBeenSetUp": "Tērzēšanu rezerves kopēšana tika iestatīta.",
   "@yourChatBackupHasBeenSetUp": {},
-  "chatBackup": "Tērzēšanas rezerves kopēšana",
+  "chatBackup": "Tērzēšanu rezerves kopēšana",
   "@chatBackup": {
     "type": "text",
     "placeholders": {}
@@ -1648,7 +1648,7 @@
       "user": {}
     }
   },
-  "theyDontMatch": "Tie nesakrīt",
+  "theyDontMatch": "Tās nesakrīt",
   "@theyDontMatch": {
     "type": "text",
     "placeholders": {}
@@ -2320,7 +2320,7 @@
   },
   "custom": "Pielāgots",
   "@custom": {},
-  "noBackupWarning": "Uzmanību! Bez tērzēšanas rezerves kopijas iespējošanas tiks zaudēta piekļuve savām šifrētajām ziņām. Ir ļoti ieteicams iespējot tērzēšanas rezerves kopiju pirms atteikšanās.",
+  "noBackupWarning": "Uzmanību! Bez tērzēšanu rezerves kopiju veidošanas iespējošanas tiks zaudēta piekļuve savām šifrētajām ziņām. Ir ļoti ieteicams iespējot tērzēšanu rezerves kopiju veidošanu pirms atteikšanās.",
   "@noBackupWarning": {},
   "fromJoining": "No pievienošanās",
   "@fromJoining": {
@@ -2806,5 +2806,71 @@
   "prepareSendingAttachment": "Sagatavo pielikuma nosūtīšanu...",
   "@prepareSendingAttachment": {},
   "compressVideo": "Saspiež video...",
-  "@compressVideo": {}
+  "@compressVideo": {},
+  "oneOfYourDevicesIsNotVerified": "Viena no ierīcēm nav apliecināta",
+  "@oneOfYourDevicesIsNotVerified": {},
+  "noticeChatBackupDeviceVerification": "Piezīme: kad visas ierīces tiek savienotas ar tērzēšanu rezerves kopiju, tās tiek automātiski apliecinātas.",
+  "@noticeChatBackupDeviceVerification": {},
+  "continueText": "Turpināt",
+  "@continueText": {},
+  "welcomeText": "Sveicieni! 👋 Šis ir FluffyChat. Tu vari pieteikties jebkurā mājasserverī, kas ir saderīgs ar https://matrix.org. Tad vari tērzēt ar ikvienu. Tas ir milzīgs decentralizētās saziņas tīkls!",
+  "@welcomeText": {},
+  "blur": "Aizmiglojums:",
+  "@blur": {},
+  "setWallpaper": "Iestatīt ekrāntapeti",
+  "@setWallpaper": {},
+  "opacity": "Necaurredzamība:",
+  "@opacity": {},
+  "manageAccount": "Pārvaldīt kontu",
+  "@manageAccount": {},
+  "noContactInformationProvided": "Serveris nesniedz nekādu derīgu saziņas informāciju",
+  "@noContactInformationProvided": {},
+  "serverInformation": "Informācija par serveri:",
+  "@serverInformation": {},
+  "aboutHomeserver": "Par {homeserver}",
+  "@aboutHomeserver": {
+    "type": "text",
+    "placeholders": {
+      "homeserver": {}
+    }
+  },
+  "contactServerAdmin": "Sazināties ar servera pārvaldītāju",
+  "@contactServerAdmin": {},
+  "contactServerSecurity": "Sazināties ar servera drošības uzturētājiem",
+  "@contactServerSecurity": {},
+  "supportPage": "Atbalsta lapa",
+  "@supportPage": {},
+  "name": "Nosaukums",
+  "@name": {},
+  "version": "Versija",
+  "@version": {},
+  "website": "Tīmekļvietne",
+  "@website": {},
+  "compressBeforeSending": "Saspiest pirms nosūtīšanas",
+  "@compressBeforeSending": {},
+  "boldText": "Teksts treknrakstā",
+  "@boldText": {},
+  "strikeThrough": "Pārsvītrots",
+  "@strikeThrough": {},
+  "invalidUrl": "Nederīgs URL",
+  "@invalidUrl": {},
+  "addLink": "Pievienot saiti",
+  "@addLink": {},
+  "italicText": "Teksts slīprakstā",
+  "@italicText": {},
+  "pleaseFillOut": "Lūgums aizpildīt",
+  "@pleaseFillOut": {},
+  "sendUncompressed": "Sūtīt nesaspiestu",
+  "@sendUncompressed": {},
+  "sendImages": "Nosūtīt {count} attēlu(s)",
+  "@sendImages": {
+    "type": "text",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "compress": "Saspiest",
+  "@compress": {},
+  "unableToJoinChat": "Nevarēja pievienoties tērzēšanai. Varbūt otra puse jau ir aizvērusi sarunu.",
+  "@unableToJoinChat": {}
 }
