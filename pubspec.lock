@@ -334,6 +334,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.1"
+  fcm_shared_isolate:
+    dependency: "direct main"
+    description:
+      name: fcm_shared_isolate
+      sha256: "45c66353aad6a237437b3d071bddddd35d391b75c3e06aaec535a9df32d44dbe"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.0"
   ffi:
     dependency: transitive
     description:
@@ -1515,6 +1523,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.0"
+  purchases_flutter:
+    dependency: "direct main"
+    description:
+      name: purchases_flutter
+      sha256: "83f58c4ef331c06af0548b009632ec2c45b119b87bf02a74f8f77a40e0f64bad"
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.30.2"
   qr:
     dependency: transitive
     description:

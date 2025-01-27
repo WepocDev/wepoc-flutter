@@ -26,6 +26,7 @@ import 'package:fluffychat/widgets/adaptive_dialogs/show_text_input_dialog.dart'
 import 'package:fluffychat/widgets/avatar.dart';
 import 'package:fluffychat/widgets/future_loading_dialog.dart';
 import 'package:fluffychat/widgets/share_scaffold_dialog.dart';
+import 'package:fluffychat/pages/subscription/suscription_status.dart';
 import '../../../utils/account_bundles.dart';
 import '../../config/setting_keys.dart';
 import '../../utils/url_launcher.dart';
@@ -113,6 +114,18 @@ class ChatListController extends State<ChatList>
         _activeSpaceId = null;
       });
 
+  int get selectedIndex {
+    switch (activeFilter) {
+      case ActiveFilter.allChats:
+      case ActiveFilter.messages:
+        return 0;
+      case ActiveFilter.spaces:
+        return 1;
+      default:
+        return -1;
+    }
+  }
+
   void onChatTap(Room room) async {
     if (room.membership == Membership.invite) {
       final joinResult = await showFutureLoadingDialog(
@@ -150,6 +163,12 @@ class ChatListController extends State<ChatList>
     }
 
     context.go('/rooms/${room.id}');
+  }
+
+  void onDestinationSelected(int? i) {
+    if (i == 1) {
+      context.go('/landing');
+    }
   }
 
   bool Function(Room) getRoomFilterByActiveFilter(ActiveFilter activeFilter) {
@@ -426,7 +445,34 @@ class ChatListController extends State<ChatList>
 
     _checkTorBrowser();
 
+    checkSubscriptionStatus().then((bool isSubscribed) {
+      print('Subscription status $isSubscribed');
+      if (!isSubscribed) {
+        _showSubscriptionDialog(context);
+      }
+    });
     super.initState();
+  }
+
+  void _showSubscriptionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext _ctx) {
+        return AlertDialog(
+          title: const Text("Subscription Required"),
+          content: const Text("You need to subscribe to access this feature."),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Subscribe"),
+              onPressed: () {
+                Navigator.of(_ctx).pop(); // Close the dialog
+                context.push('/subscribe');
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override

@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:fluffychat/pages/benefits/benefits_view.dart';
+import 'package:fluffychat/pages/landing/landing_view.dart';
+import 'package:fluffychat/pages/onboarding/onboarding_view.dart';
 import 'package:flutter/material.dart';
 
 import 'package:go_router/go_router.dart';
@@ -31,6 +34,7 @@ import 'package:fluffychat/pages/settings_notifications/settings_notifications.d
 import 'package:fluffychat/pages/settings_password/settings_password.dart';
 import 'package:fluffychat/pages/settings_security/settings_security.dart';
 import 'package:fluffychat/pages/settings_style/settings_style.dart';
+import 'package:fluffychat/pages/subscription/subscription.dart';
 import 'package:fluffychat/widgets/layouts/empty_page.dart';
 import 'package:fluffychat/widgets/layouts/two_column_layout.dart';
 import 'package:fluffychat/widgets/log_view.dart';
@@ -48,7 +52,7 @@ abstract class AppRoutes {
     BuildContext context,
     GoRouterState state,
   ) =>
-      Matrix.of(context).client.isLogged() ? null : '/home';
+      Matrix.of(context).client.isLogged() ? null : '/onboarding';
 
   AppRoutes();
 
@@ -56,7 +60,30 @@ abstract class AppRoutes {
     GoRoute(
       path: '/',
       redirect: (context, state) =>
-          Matrix.of(context).client.isLogged() ? '/rooms' : '/home',
+          Matrix.of(context).client.isLogged() ? '/rooms' : '/onboarding',
+    ),
+    GoRoute(
+      path: '/onboarding',
+      pageBuilder: (context, state) => defaultPageBuilder(
+        context,
+        state,
+        const OnBoardingView(),
+      ),
+    ),
+    GoRoute(
+      path: '/subscribe',
+      pageBuilder: (context, state) =>
+          defaultPageBuilder(context, state, const Subscription()),
+    ),
+    GoRoute(
+      path: '/landing',
+      pageBuilder: (context, state) =>
+          defaultPageBuilder(context, state, const LandingView()),
+    ),
+    GoRoute(
+      path: '/benefits',
+      pageBuilder: (context, state) =>
+          defaultPageBuilder(context, state, BenefitsView()),
     ),
     GoRoute(
       path: '/home',

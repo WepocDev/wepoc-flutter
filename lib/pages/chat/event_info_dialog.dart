@@ -69,7 +69,6 @@ class EventInfoDialog extends StatelessWidget {
             title: Text('${L10n.of(context).status}:'),
             subtitle: Text(event.status.name),
           ),
-          ListTile(title: Text('${L10n.of(context).sourceCode}:')),
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Material(
