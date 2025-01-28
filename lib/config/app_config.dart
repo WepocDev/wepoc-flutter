@@ -7,7 +7,7 @@ abstract class AppConfig {
   static String get applicationName => _applicationName;
   static String? _applicationWelcomeMessage;
   static String? get applicationWelcomeMessage => _applicationWelcomeMessage;
-  static String _defaultHomeserver = 'matrix.org';
+  static String _defaultHomeserver = 'matrix.wepoc.co';
   static String get defaultHomeserver => _defaultHomeserver;
   static double fontSizeFactor = 1;
   static const Color chatColor = primaryColor;
@@ -21,7 +21,6 @@ abstract class AppConfig {
   static String _privacyUrl =
       'https://github.com/krille-chan/fluffychat/blob/main/PRIVACY.md';
   static String get privacyUrl => _privacyUrl;
-  static const String website = 'https://fluffychat.im';
   static const String enablePushTutorial =
       'https://github.com/krille-chan/fluffychat/wiki/Push-Notifications-without-Google-Services';
   static const String encryptionTutorial =
@@ -96,10 +95,10 @@ abstract class AppConfig {
       _defaultHomeserver = json['default_homeserver'];
     }
     if (json['privacy_url'] is String) {
-      _privacyUrl = json['privacy_url'];
+      _webBaseUrl = json['privacy_url'];
     }
     if (json['web_base_url'] is String) {
-      _webBaseUrl = json['web_base_url'];
+      _privacyUrl = json['web_base_url'];
     }
     if (json['render_html'] is bool) {
       renderHtml = json['render_html'];
