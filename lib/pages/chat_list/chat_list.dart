@@ -1,14 +1,12 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:adaptive_dialog/adaptive_dialog.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_shortcuts/flutter_shortcuts.dart';
-import 'package:future_loading_dialog/future_loading_dialog.dart';
 import 'package:go_router/go_router.dart';
 import 'package:matrix/matrix.dart' as sdk;
 import 'package:matrix/matrix.dart';
@@ -16,17 +14,21 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'package:fluffychat/config/app_config.dart';
-import 'package:fluffychat/pages/chat/send_file_dialog.dart';
 import 'package:fluffychat/pages/chat_list/chat_list_view.dart';
 import 'package:fluffychat/utils/localized_exception_extension.dart';
 import 'package:fluffychat/utils/matrix_sdk_extensions/matrix_locals.dart';
 import 'package:fluffychat/utils/platform_infos.dart';
+import 'package:fluffychat/utils/show_scaffold_dialog.dart';
 import 'package:fluffychat/utils/show_update_snackbar.dart';
+import 'package:fluffychat/widgets/adaptive_dialogs/show_modal_action_popup.dart';
+import 'package:fluffychat/widgets/adaptive_dialogs/show_ok_cancel_alert_dialog.dart';
+import 'package:fluffychat/widgets/adaptive_dialogs/show_text_input_dialog.dart';
 import 'package:fluffychat/widgets/avatar.dart';
 import 'package:fluffychat/pages/subscription/suscription_status.dart';
+import 'package:fluffychat/widgets/future_loading_dialog.dart';
+import 'package:fluffychat/widgets/share_scaffold_dialog.dart';
 import '../../../utils/account_bundles.dart';
 import '../../config/setting_keys.dart';
-import '../../utils/matrix_sdk_extensions/matrix_file_extension.dart';
 import '../../utils/url_launcher.dart';
 import '../../utils/voip/callkeep_manager.dart';
 import '../../widgets/fluffy_chat_app.dart';
@@ -35,11 +37,6 @@ import '../bootstrap/bootstrap_dialog.dart';
 
 import 'package:fluffychat/utils/tor_stub.dart'
     if (dart.library.html) 'package:tor_detector_web/tor_detector_web.dart';
-
-enum SelectMode {
-  normal,
-  share,
-}
 
 enum PopupMenuAction {
   settings,
@@ -62,15 +59,15 @@ extension LocalizedActiveFilter on ActiveFilter {
   String toLocalizedString(BuildContext context) {
     switch (this) {
       case ActiveFilter.allChats:
-        return L10n.of(context)!.all;
+        return L10n.of(context).all;
       case ActiveFilter.messages:
-        return L10n.of(context)!.messages;
+        return L10n.of(context).messages;
       case ActiveFilter.unread:
-        return L10n.of(context)!.unread;
+        return L10n.of(context).unread;
       case ActiveFilter.groups:
-        return L10n.of(context)!.groups;
+        return L10n.of(context).groups;
       case ActiveFilter.spaces:
-        return L10n.of(context)!.spaces;
+        return L10n.of(context).spaces;
     }
   }
 }
@@ -97,10 +94,6 @@ class ChatListController extends State<ChatList>
   StreamSubscription? _intentFileStreamSubscription;
 
   StreamSubscription? _intentUriStreamSubscription;
-
-  void createNewSpace() {
-    context.push<String?>('/rooms/newspace');
-  }
 
   ActiveFilter activeFilter = AppConfig.separateChatTypes
       ? ActiveFilter.messages
@@ -135,47 +128,6 @@ class ChatListController extends State<ChatList>
 
   void onChatTap(Room room) async {
     if (room.membership == Membership.invite) {
-      final inviterId =
-          room.getState(EventTypes.RoomMember, room.client.userID!)?.senderId;
-      final inviteAction = await showModalActionSheet<InviteActions>(
-        context: context,
-        message: room.isDirectChat
-            ? L10n.of(context)!.invitePrivateChat
-            : L10n.of(context)!.inviteGroupChat,
-        title: room.getLocalizedDisplayname(MatrixLocals(L10n.of(context)!)),
-        actions: [
-          SheetAction(
-            key: InviteActions.accept,
-            label: L10n.of(context)!.accept,
-            icon: Icons.check_outlined,
-            isDefaultAction: true,
-          ),
-          SheetAction(
-            key: InviteActions.decline,
-            label: L10n.of(context)!.decline,
-            icon: Icons.close_outlined,
-            isDestructiveAction: true,
-          ),
-          SheetAction(
-            key: InviteActions.block,
-            label: L10n.of(context)!.block,
-            icon: Icons.block_outlined,
-            isDestructiveAction: true,
-          ),
-        ],
-      );
-      if (inviteAction == null) return;
-      if (inviteAction == InviteActions.block) {
-        context.go('/rooms/settings/security/ignorelist', extra: inviterId);
-        return;
-      }
-      if (inviteAction == InviteActions.decline) {
-        await showFutureLoadingDialog(
-          context: context,
-          future: room.leave,
-        );
-        return;
-      }
       final joinResult = await showFutureLoadingDialog(
         context: context,
         future: () async {
@@ -186,6 +138,7 @@ class ChatListController extends State<ChatList>
           await room.join();
           await waitForRoom;
         },
+        exceptionContext: ExceptionContext.joinRoom,
       );
       if (joinResult.error != null) return;
     }
@@ -193,7 +146,7 @@ class ChatListController extends State<ChatList>
     if (room.membership == Membership.ban) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(L10n.of(context)!.youHaveBeenBannedFromThisChat),
+          content: Text(L10n.of(context).youHaveBeenBannedFromThisChat),
         ),
       );
       return;
@@ -207,41 +160,6 @@ class ChatListController extends State<ChatList>
     if (room.isSpace) {
       setActiveSpace(room.id);
       return;
-    }
-    // Share content into this room
-    final shareContent = Matrix.of(context).shareContent;
-    if (shareContent != null) {
-      final shareFile = shareContent.tryGet<MatrixFile>('file');
-      if (shareContent.tryGet<String>('msgtype') == 'chat.fluffy.shared_file' &&
-          shareFile != null) {
-        await showDialog(
-          context: context,
-          useRootNavigator: false,
-          builder: (c) => SendFileDialog(
-            files: [shareFile],
-            room: room,
-          ),
-        );
-        Matrix.of(context).shareContent = null;
-      } else {
-        final consent = await showOkCancelAlertDialog(
-          context: context,
-          title: L10n.of(context)!.forward,
-          message: L10n.of(context)!.forwardMessageTo(
-            room.getLocalizedDisplayname(MatrixLocals(L10n.of(context)!)),
-          ),
-          okLabel: L10n.of(context)!.forward,
-          cancelLabel: L10n.of(context)!.cancel,
-        );
-        if (consent == OkCancelResult.cancel) {
-          Matrix.of(context).shareContent = null;
-          return;
-        }
-        if (consent == OkCancelResult.ok) {
-          room.sendEvent(shareContent);
-          Matrix.of(context).shareContent = null;
-        }
-      }
     }
 
     context.go('/rooms/${room.id}');
@@ -287,27 +205,23 @@ class ChatListController extends State<ChatList>
   void setServer() async {
     final newServer = await showTextInputDialog(
       useRootNavigator: false,
-      title: L10n.of(context)!.changeTheHomeserver,
+      title: L10n.of(context).changeTheHomeserver,
       context: context,
-      okLabel: L10n.of(context)!.ok,
-      cancelLabel: L10n.of(context)!.cancel,
-      textFields: [
-        DialogTextField(
-          prefixText: 'https://',
-          hintText: Matrix.of(context).client.homeserver?.host,
-          initialText: searchServer,
-          keyboardType: TextInputType.url,
-          autocorrect: false,
-          validator: (server) => server?.contains('.') == true
-              ? null
-              : L10n.of(context)!.invalidServerName,
-        ),
-      ],
+      okLabel: L10n.of(context).ok,
+      cancelLabel: L10n.of(context).cancel,
+      prefixText: 'https://',
+      hintText: Matrix.of(context).client.homeserver?.host,
+      initialText: searchServer,
+      keyboardType: TextInputType.url,
+      autocorrect: false,
+      validator: (server) => server.contains('.') == true
+          ? null
+          : L10n.of(context).invalidServerName,
     );
     if (newServer == null) return;
-    Matrix.of(context).store.setString(_serverStoreNamespace, newServer.single);
+    Matrix.of(context).store.setString(_serverStoreNamespace, newServer);
     setState(() {
-      searchServer = newServer.single;
+      searchServer = newServer;
     });
     _coolDown?.cancel();
     _coolDown = Timer(const Duration(milliseconds: 500), _search);
@@ -442,37 +356,30 @@ class ChatListController extends State<ChatList>
 
   String? get activeChat => widget.activeChat;
 
-  SelectMode get selectMode => Matrix.of(context).shareContent != null
-      ? SelectMode.share
-      : SelectMode.normal;
-
-  void _processIncomingSharedFiles(List<SharedMediaFile> files) {
+  void _processIncomingSharedMedia(List<SharedMediaFile> files) {
     if (files.isEmpty) return;
-    final file = File(files.first.path.replaceFirst('file://', ''));
 
-    Matrix.of(context).shareContent = {
-      'msgtype': 'chat.fluffy.shared_file',
-      'file': MatrixFile(
-        bytes: file.readAsBytesSync(),
-        name: file.path,
-      ).detectFileType,
-    };
-    context.go('/rooms');
-  }
-
-  void _processIncomingSharedText(String? text) {
-    if (text == null) return;
-    if (text.toLowerCase().startsWith(AppConfig.deepLinkPrefix) ||
-        text.toLowerCase().startsWith(AppConfig.inviteLinkPrefix) ||
-        (text.toLowerCase().startsWith(AppConfig.schemePrefix) &&
-            !RegExp(r'\s').hasMatch(text))) {
-      return _processIncomingUris(text);
-    }
-    Matrix.of(context).shareContent = {
-      'msgtype': 'm.text',
-      'body': text,
-    };
-    context.go('/rooms');
+    showScaffoldDialog(
+      context: context,
+      builder: (context) => ShareScaffoldDialog(
+        items: files.map(
+          (file) {
+            if ({
+              SharedMediaType.text,
+              SharedMediaType.url,
+            }.contains(file.type)) {
+              return TextShareItem(file.path);
+            }
+            return FileShareItem(
+              XFile(
+                file.path.replaceFirst('file://', ''),
+                mimeType: file.mimeType,
+              ),
+            );
+          },
+        ).toList(),
+      ),
+    );
   }
 
   void _processIncomingUris(String? text) async {
@@ -487,18 +394,14 @@ class ChatListController extends State<ChatList>
     if (!PlatformInfos.isMobile) return;
 
     // For sharing images coming from outside the app while the app is in the memory
-    _intentFileStreamSubscription = ReceiveSharingIntent.getMediaStream()
-        .listen(_processIncomingSharedFiles, onError: print);
+    _intentFileStreamSubscription = ReceiveSharingIntent.instance
+        .getMediaStream()
+        .listen(_processIncomingSharedMedia, onError: print);
 
     // For sharing images coming from outside the app while the app is closed
-    ReceiveSharingIntent.getInitialMedia().then(_processIncomingSharedFiles);
-
-    // For sharing or opening urls/text coming from outside the app while the app is in the memory
-    _intentDataStreamSubscription = ReceiveSharingIntent.getTextStream()
-        .listen(_processIncomingSharedText, onError: print);
-
-    // For sharing or opening urls/text coming from outside the app while the app is closed
-    ReceiveSharingIntent.getInitialText().then(_processIncomingSharedText);
+    ReceiveSharingIntent.instance
+        .getInitialMedia()
+        .then(_processIncomingSharedMedia);
 
     // For receiving shared Uris
     _intentUriStreamSubscription = linkStream.listen(_processIncomingUris);
@@ -586,10 +489,6 @@ class ChatListController extends State<ChatList>
     BuildContext posContext, [
     Room? space,
   ]) async {
-    if (room.membership == Membership.invite) {
-      return onChatTap(room);
-    }
-
     final overlay =
         Overlay.of(posContext).context.findRenderObject() as RenderBox;
 
@@ -607,7 +506,16 @@ class ChatListController extends State<ChatList>
     );
 
     final displayname =
-        room.getLocalizedDisplayname(MatrixLocals(L10n.of(context)!));
+        room.getLocalizedDisplayname(MatrixLocals(L10n.of(context)));
+
+    final spacesWithPowerLevels = room.client.rooms
+        .where(
+          (space) =>
+              space.isSpace &&
+              space.canChangeStateEvent(EventTypes.SpaceChild) &&
+              !space.spaceChildren.any((c) => c.roomId == room.id),
+        )
+        .toList();
 
     final action = await showMenu<ChatContextAction>(
       context: posContext,
@@ -647,74 +555,117 @@ class ChatListController extends State<ChatList>
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    L10n.of(context)!
-                        .goToSpace(space.getLocalizedDisplayname()),
+                    L10n.of(context).goToSpace(space.getLocalizedDisplayname()),
                   ),
                 ),
               ],
             ),
           ),
-        PopupMenuItem(
-          value: ChatContextAction.mute,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                room.pushRuleState == PushRuleState.notify
-                    ? Icons.notifications_off_outlined
-                    : Icons.notifications_off,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                room.pushRuleState == PushRuleState.notify
-                    ? L10n.of(context)!.muteChat
-                    : L10n.of(context)!.unmuteChat,
-              ),
-            ],
+        if (room.membership == Membership.join) ...[
+          PopupMenuItem(
+            value: ChatContextAction.mute,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  room.pushRuleState == PushRuleState.notify
+                      ? Icons.notifications_off_outlined
+                      : Icons.notifications_off,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  room.pushRuleState == PushRuleState.notify
+                      ? L10n.of(context).muteChat
+                      : L10n.of(context).unmuteChat,
+                ),
+              ],
+            ),
           ),
-        ),
-        PopupMenuItem(
-          value: ChatContextAction.markUnread,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                room.markedUnread
-                    ? Icons.mark_as_unread
-                    : Icons.mark_as_unread_outlined,
-              ),
-              const SizedBox(width: 12),
-              Text(
-                room.markedUnread
-                    ? L10n.of(context)!.markAsRead
-                    : L10n.of(context)!.markAsUnread,
-              ),
-            ],
+          PopupMenuItem(
+            value: ChatContextAction.markUnread,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  room.markedUnread
+                      ? Icons.mark_as_unread
+                      : Icons.mark_as_unread_outlined,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  room.markedUnread
+                      ? L10n.of(context).markAsRead
+                      : L10n.of(context).markAsUnread,
+                ),
+              ],
+            ),
           ),
-        ),
-        PopupMenuItem(
-          value: ChatContextAction.favorite,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(room.isFavourite ? Icons.push_pin : Icons.push_pin_outlined),
-              const SizedBox(width: 12),
-              Text(
-                room.isFavourite
-                    ? L10n.of(context)!.unpin
-                    : L10n.of(context)!.pin,
-              ),
-            ],
+          PopupMenuItem(
+            value: ChatContextAction.favorite,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  room.isFavourite ? Icons.push_pin : Icons.push_pin_outlined,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  room.isFavourite
+                      ? L10n.of(context).unpin
+                      : L10n.of(context).pin,
+                ),
+              ],
+            ),
           ),
-        ),
+          if (spacesWithPowerLevels.isNotEmpty)
+            PopupMenuItem(
+              value: ChatContextAction.addToSpace,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.group_work_outlined),
+                  const SizedBox(width: 12),
+                  Text(L10n.of(context).addToSpace),
+                ],
+              ),
+            ),
+        ],
+        if (room.membership == Membership.invite)
+          PopupMenuItem(
+            value: ChatContextAction.block,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.block_outlined,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  L10n.of(context).block,
+                  style: TextStyle(color: Theme.of(context).colorScheme.error),
+                ),
+              ],
+            ),
+          ),
         PopupMenuItem(
           value: ChatContextAction.leave,
           child: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.delete_outlined),
+              Icon(
+                Icons.delete_outlined,
+                color: Theme.of(context).colorScheme.onErrorContainer,
+              ),
               const SizedBox(width: 12),
-              Text(L10n.of(context)!.leave),
+              Text(
+                room.membership == Membership.invite
+                    ? L10n.of(context).delete
+                    : L10n.of(context).leave,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onErrorContainer,
+                ),
+              ),
             ],
           ),
         ),
@@ -757,11 +708,11 @@ class ChatListController extends State<ChatList>
         final confirmed = await showOkCancelAlertDialog(
           useRootNavigator: false,
           context: context,
-          title: L10n.of(context)!.areYouSure,
-          okLabel: L10n.of(context)!.leave,
-          cancelLabel: L10n.of(context)!.no,
-          message: L10n.of(context)!.archiveRoomDescription,
-          isDestructiveAction: true,
+          title: L10n.of(context).areYouSure,
+          message: L10n.of(context).archiveRoomDescription,
+          okLabel: L10n.of(context).leave,
+          cancelLabel: L10n.of(context).cancel,
+          isDestructive: true,
         );
         if (confirmed == OkCancelResult.cancel) return;
         if (!mounted) return;
@@ -769,12 +720,35 @@ class ChatListController extends State<ChatList>
         await showFutureLoadingDialog(context: context, future: room.leave);
 
         return;
+      case ChatContextAction.addToSpace:
+        final space = await showModalActionPopup(
+          context: context,
+          title: L10n.of(context).space,
+          actions: spacesWithPowerLevels
+              .map(
+                (space) => AdaptiveModalAction(
+                  value: space,
+                  label: space
+                      .getLocalizedDisplayname(MatrixLocals(L10n.of(context))),
+                ),
+              )
+              .toList(),
+        );
+        if (space == null) return;
+        await showFutureLoadingDialog(
+          context: context,
+          future: () => space.setSpaceChild(room.id),
+        );
+      case ChatContextAction.block:
+        final userId =
+            room.getState(EventTypes.RoomMember, room.client.userID!)?.senderId;
+        context.go('/rooms/settings/security/ignorelist', extra: userId);
     }
   }
 
   void dismissStatusList() async {
     final result = await showOkCancelAlertDialog(
-      title: L10n.of(context)!.hidePresences,
+      title: L10n.of(context).hidePresences,
       context: context,
     );
     if (result == OkCancelResult.ok) {
@@ -790,19 +764,15 @@ class ChatListController extends State<ChatList>
     final input = await showTextInputDialog(
       useRootNavigator: false,
       context: context,
-      title: L10n.of(context)!.setStatus,
-      message: L10n.of(context)!.leaveEmptyToClearStatus,
-      okLabel: L10n.of(context)!.ok,
-      cancelLabel: L10n.of(context)!.cancel,
-      textFields: [
-        DialogTextField(
-          hintText: L10n.of(context)!.statusExampleMessage,
-          maxLines: 6,
-          minLines: 1,
-          maxLength: 255,
-          initialText: currentPresence.statusMsg,
-        ),
-      ],
+      title: L10n.of(context).setStatus,
+      message: L10n.of(context).leaveEmptyToClearStatus,
+      okLabel: L10n.of(context).ok,
+      cancelLabel: L10n.of(context).cancel,
+      hintText: L10n.of(context).statusExampleMessage,
+      maxLines: 6,
+      minLines: 1,
+      maxLength: 255,
+      initialText: currentPresence.statusMsg,
     );
     if (input == null) return;
     if (!mounted) return;
@@ -811,7 +781,7 @@ class ChatListController extends State<ChatList>
       future: () => client.setPresence(
         client.userID!,
         PresenceType.online,
-        statusMsg: input.single,
+        statusMsg: input,
       ),
     );
   }
@@ -819,6 +789,7 @@ class ChatListController extends State<ChatList>
   bool waitForFirstSync = false;
 
   Future<void> _waitForFirstSync() async {
+    final router = GoRouter.of(context);
     final client = Matrix.of(context).client;
     await client.roomsLoading;
     await client.accountDataLoading;
@@ -839,11 +810,34 @@ class ChatListController extends State<ChatList>
     setState(() {
       waitForFirstSync = true;
     });
-  }
 
-  void cancelAction() {
-    if (selectMode == SelectMode.share) {
-      setState(() => Matrix.of(context).shareContent = null);
+    if (client.userDeviceKeys[client.userID!]?.deviceKeys.values
+            .any((device) => !device.verified && !device.blocked) ??
+        false) {
+      late final ScaffoldFeatureController controller;
+      final theme = Theme.of(context);
+      controller = ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 15),
+          showCloseIcon: true,
+          backgroundColor: theme.colorScheme.errorContainer,
+          closeIconColor: theme.colorScheme.onErrorContainer,
+          content: Text(
+            L10n.of(context).oneOfYourDevicesIsNotVerified,
+            style: TextStyle(
+              color: theme.colorScheme.onErrorContainer,
+            ),
+          ),
+          action: SnackBarAction(
+            onPressed: () {
+              controller.close();
+              router.go('/rooms/settings/devices');
+            },
+            textColor: theme.colorScheme.onErrorContainer,
+            label: L10n.of(context).settings,
+          ),
+        ),
+      );
     }
   }
 
@@ -878,22 +872,23 @@ class ChatListController extends State<ChatList>
   }
 
   void editBundlesForAccount(String? userId, String? activeBundle) async {
-    final l10n = L10n.of(context)!;
+    final l10n = L10n.of(context);
     final client = Matrix.of(context)
         .widget
         .clients[Matrix.of(context).getClientIndexByMatrixId(userId!)];
-    final action = await showConfirmationDialog<EditBundleAction>(
+    final action = await showModalActionPopup<EditBundleAction>(
       context: context,
-      title: L10n.of(context)!.editBundlesForAccount,
+      title: L10n.of(context).editBundlesForAccount,
+      cancelLabel: L10n.of(context).cancel,
       actions: [
-        AlertDialogAction(
-          key: EditBundleAction.addToBundle,
-          label: L10n.of(context)!.addToBundle,
+        AdaptiveModalAction(
+          value: EditBundleAction.addToBundle,
+          label: L10n.of(context).addToBundle,
         ),
         if (activeBundle != client.userID)
-          AlertDialogAction(
-            key: EditBundleAction.removeFromBundle,
-            label: L10n.of(context)!.removeFromBundle,
+          AdaptiveModalAction(
+            value: EditBundleAction.removeFromBundle,
+            label: L10n.of(context).removeFromBundle,
           ),
       ],
     );
@@ -903,12 +898,12 @@ class ChatListController extends State<ChatList>
         final bundle = await showTextInputDialog(
           context: context,
           title: l10n.bundleName,
-          textFields: [DialogTextField(hintText: l10n.bundleName)],
+          hintText: l10n.bundleName,
         );
-        if (bundle == null || bundle.isEmpty || bundle.single.isEmpty) return;
+        if (bundle == null || bundle.isEmpty || bundle.isEmpty) return;
         await showFutureLoadingDialog(
           context: context,
-          future: () => client.setAccountBundle(bundle.single),
+          future: () => client.setAccountBundle(bundle),
         );
         break;
       case EditBundleAction.removeFromBundle:
@@ -955,7 +950,7 @@ class ChatListController extends State<ChatList>
     isTorBrowser = isTor;
   }
 
-  Future<void> dehydrate() => Matrix.of(context).dehydrateAction();
+  Future<void> dehydrate() => Matrix.of(context).dehydrateAction(context);
 }
 
 enum EditBundleAction { addToBundle, removeFromBundle }
@@ -973,4 +968,6 @@ enum ChatContextAction {
   markUnread,
   mute,
   leave,
+  addToSpace,
+  block
 }

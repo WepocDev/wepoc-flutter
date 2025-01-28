@@ -6,7 +6,9 @@ import 'package:matrix/matrix.dart';
 import 'package:swipe_to_action/swipe_to_action.dart';
 
 import 'package:fluffychat/config/themes.dart';
+import 'package:fluffychat/pages/chat/events/room_creation_state_event.dart';
 import 'package:fluffychat/utils/date_time_extension.dart';
+import 'package:fluffychat/utils/file_description.dart';
 import 'package:fluffychat/utils/string_color.dart';
 import 'package:fluffychat/widgets/avatar.dart';
 import 'package:fluffychat/widgets/matrix.dart';
@@ -33,7 +35,7 @@ class Message extends StatelessWidget {
   final bool highlightMarker;
   final bool animateIn;
   final void Function()? resetAnimateIn;
-  final Color? avatarPresenceBackgroundColor;
+  final bool wallpaperMode;
 
   const Message(
     this.event, {
@@ -51,12 +53,14 @@ class Message extends StatelessWidget {
     this.highlightMarker = false,
     this.animateIn = false,
     this.resetAnimateIn,
-    this.avatarPresenceBackgroundColor,
+    this.wallpaperMode = false,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     if (!{
       EventTypes.Message,
       EventTypes.Sticker,
@@ -65,6 +69,9 @@ class Message extends StatelessWidget {
     }.contains(event.type)) {
       if (event.type.startsWith('m.call.')) {
         return const SizedBox.shrink();
+      }
+      if (event.type == EventTypes.RoomCreate) {
+        return RoomCreationStateEvent(event: event);
       }
       return StateMessage(event);
     }
@@ -77,8 +84,8 @@ class Message extends StatelessWidget {
     final client = Matrix.of(context).client;
     final ownMessage = event.senderId == client.userID;
     final alignment = ownMessage ? Alignment.topRight : Alignment.topLeft;
-    // ignore: deprecated_member_use
-    var color = Theme.of(context).colorScheme.surfaceVariant;
+
+    var color = theme.colorScheme.surfaceContainerHigh;
     final displayTime = event.type == EventTypes.RoomCreate ||
         nextEvent == null ||
         !event.originServerTs.sameEnvironment(nextEvent!.originServerTs);
@@ -101,8 +108,10 @@ class Message extends StatelessWidget {
         previousEvent!.originServerTs.sameEnvironment(event.originServerTs);
 
     final textColor = ownMessage
-        ? Theme.of(context).colorScheme.onPrimary
-        : Theme.of(context).colorScheme.onSurface;
+        ? theme.brightness == Brightness.light
+            ? theme.colorScheme.onPrimary
+            : theme.colorScheme.onPrimaryContainer
+        : theme.colorScheme.onSurface;
     final rowMainAxisAlignment =
         ownMessage ? MainAxisAlignment.end : MainAxisAlignment.start;
 
@@ -117,12 +126,18 @@ class Message extends StatelessWidget {
       bottomRight:
           ownMessage && previousEventSameSender ? hardCorner : roundedCorner,
     );
-    final noBubble = {
-          MessageTypes.Video,
-          MessageTypes.Image,
-          MessageTypes.Sticker,
-        }.contains(event.messageType) &&
-        !event.redacted;
+    final noBubble = ({
+              MessageTypes.Video,
+              MessageTypes.Image,
+              MessageTypes.Sticker,
+            }.contains(event.messageType) &&
+            event.fileDescription == null &&
+            !event.redacted) ||
+        (event.messageType == MessageTypes.Text &&
+            event.relationshipType == null &&
+            event.onlyEmotes &&
+            event.numberEmotes > 0 &&
+            event.numberEmotes <= 3);
     final noPadding = {
       MessageTypes.File,
       MessageTypes.Audio,
@@ -131,7 +146,9 @@ class Message extends StatelessWidget {
     if (ownMessage) {
       color = displayEvent.status.isError
           ? Colors.redAccent
-          : Theme.of(context).colorScheme.primary;
+          : theme.brightness == Brightness.light
+              ? theme.colorScheme.primary
+              : theme.colorScheme.primaryContainer;
     }
 
     final resetAnimateIn = this.resetAnimateIn;
@@ -168,14 +185,10 @@ class Message extends StatelessWidget {
                           borderRadius:
                               BorderRadius.circular(AppConfig.borderRadius / 2),
                           color: selected
-                              ? Theme.of(context)
-                                  .colorScheme
-                                  .secondaryContainer
+                              ? theme.colorScheme.secondaryContainer
                                   .withAlpha(100)
                               : highlightMarker
-                                  ? Theme.of(context)
-                                      .colorScheme
-                                      .tertiaryContainer
+                                  ? theme.colorScheme.tertiaryContainer
                                       .withAlpha(100)
                                   : Colors.transparent,
                         ),
@@ -224,7 +237,7 @@ class Message extends StatelessWidget {
                                 name: user.calcDisplayname(),
                                 presenceUserId: user.stateKey,
                                 presenceBackgroundColor:
-                                    avatarPresenceBackgroundColor,
+                                    wallpaperMode ? Colors.transparent : null,
                                 onTap: () => onAvatarTab(event),
                               );
                             },
@@ -252,13 +265,25 @@ class Message extends StatelessWidget {
                                             return Text(
                                               displayname,
                                               style: TextStyle(
-                                                fontSize: 12,
-                                                color: (Theme.of(context)
-                                                            .brightness ==
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.bold,
+                                                color: (theme.brightness ==
                                                         Brightness.light
                                                     ? displayname.color
                                                     : displayname
                                                         .lightColorText),
+                                                shadows: !wallpaperMode
+                                                    ? null
+                                                    : [
+                                                        const Shadow(
+                                                          offset: Offset(
+                                                            0.0,
+                                                            0.0,
+                                                          ),
+                                                          blurRadius: 3,
+                                                          color: Colors.black,
+                                                        ),
+                                                      ],
                                               ),
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,
@@ -279,21 +304,21 @@ class Message extends StatelessWidget {
                                   child: AnimatedOpacity(
                                     opacity: animateIn
                                         ? 0
-                                        : event.redacted ||
-                                                event.messageType ==
+                                        : event.messageType ==
                                                     MessageTypes.BadEncrypted ||
                                                 event.status.isSending
                                             ? 0.5
                                             : 1,
                                     duration: FluffyThemes.animationDuration,
                                     curve: FluffyThemes.animationCurve,
-                                    child: Material(
-                                      color:
-                                          noBubble ? Colors.transparent : color,
-                                      clipBehavior: Clip.antiAlias,
-                                      shape: RoundedRectangleBorder(
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: noBubble
+                                            ? Colors.transparent
+                                            : color,
                                         borderRadius: borderRadius,
                                       ),
+                                      clipBehavior: Clip.antiAlias,
                                       child: Container(
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(
@@ -373,6 +398,7 @@ class Message extends StatelessWidget {
                                               textColor: textColor,
                                               onInfoTab: onInfoTab,
                                               borderRadius: borderRadius,
+                                              timeline: timeline,
                                             ),
                                             if (event.hasAggregatedEvents(
                                               timeline,
@@ -437,18 +463,23 @@ class Message extends StatelessWidget {
               child: Center(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 4.0),
-                  child: Text(
-                    event.originServerTs.localizedTime(context),
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12 * AppConfig.fontSizeFactor,
-                      color: Theme.of(context).colorScheme.secondary,
-                      shadows: [
-                        Shadow(
-                          color: Theme.of(context).colorScheme.surface,
-                          blurRadius: 3,
+                  child: Material(
+                    borderRadius:
+                        BorderRadius.circular(AppConfig.borderRadius * 2),
+                    color: theme.colorScheme.surface.withAlpha(128),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0,
+                        vertical: 2.0,
+                      ),
+                      child: Text(
+                        event.originServerTs.localizedTime(context),
+                        style: TextStyle(
+                          fontSize: 12 * AppConfig.fontSizeFactor,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.secondary,
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
@@ -473,28 +504,33 @@ class Message extends StatelessWidget {
             Row(
               children: [
                 Expanded(
-                  child: Divider(color: Theme.of(context).colorScheme.primary),
+                  child:
+                      Divider(color: theme.colorScheme.surfaceContainerHighest),
                 ),
                 Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    color: Theme.of(context).colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(4),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 16.0,
                   ),
-                  margin: const EdgeInsets.all(8.0),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    borderRadius:
+                        BorderRadius.circular(AppConfig.borderRadius / 3),
+                    color: theme.colorScheme.surface.withAlpha(128),
                   ),
                   child: Text(
-                    L10n.of(context)!.readUpToHere,
-                    style:
-                        TextStyle(color: Theme.of(context).colorScheme.primary),
+                    L10n.of(context).readUpToHere,
+                    style: TextStyle(
+                      fontSize: 12 * AppConfig.fontSizeFactor,
+                    ),
                   ),
                 ),
                 Expanded(
-                  child: Divider(color: Theme.of(context).colorScheme.primary),
+                  child:
+                      Divider(color: theme.colorScheme.surfaceContainerHighest),
                 ),
               ],
             ),

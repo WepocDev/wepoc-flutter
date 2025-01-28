@@ -43,7 +43,7 @@ Future<DatabaseApi> flutterMatrixSdkDatabaseBuilder(Client client) async {
 
     try {
       // Send error notification:
-      final l10n = lookupL10n(PlatformDispatcher.instance.locale);
+      final l10n = await lookupL10n(PlatformDispatcher.instance.locale);
       ClientManager.sendInitNotification(
         l10n.initAppError,
         l10n.databaseBuildErrorBody(
@@ -115,7 +115,7 @@ Future<MatrixSdkDatabase> _constructDatabase(Client client) async {
   return MatrixSdkDatabase(
     client.clientName,
     database: database,
-    maxFileSize: 1024 * 1024 * 10,
+    maxFileSize: 1000 * 1000 * 10,
     fileStorageLocation: fileStorageLocation?.uri,
     deleteFilesAfterDuration: const Duration(days: 30),
   );

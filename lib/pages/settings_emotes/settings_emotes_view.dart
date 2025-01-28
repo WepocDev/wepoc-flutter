@@ -19,12 +19,14 @@ class EmotesSettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final client = Matrix.of(context).client;
     final imageKeys = controller.pack!.images.keys.toList();
     return Scaffold(
       appBar: AppBar(
         leading: const Center(child: BackButton()),
-        title: Text(L10n.of(context)!.customEmojisAndStickers),
+        title: Text(L10n.of(context).customEmojisAndStickers),
         actions: [
           PopupMenuButton<PopupMenuEmojiActions>(
             onSelected: (value) {
@@ -41,11 +43,11 @@ class EmotesSettingsView extends StatelessWidget {
             itemBuilder: (context) => [
               PopupMenuItem(
                 value: PopupMenuEmojiActions.import,
-                child: Text(L10n.of(context)!.importFromZipFile),
+                child: Text(L10n.of(context).importFromZipFile),
               ),
               PopupMenuItem(
                 value: PopupMenuEmojiActions.export,
-                child: Text(L10n.of(context)!.exportEmotePack),
+                child: Text(L10n.of(context).exportEmotePack),
               ),
             ],
           ),
@@ -73,7 +75,7 @@ class EmotesSettingsView extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.all(Radius.circular(10)),
-                      color: Theme.of(context).secondaryHeaderColor,
+                      color: theme.secondaryHeaderColor,
                     ),
                     child: TextField(
                       controller: controller.newImageCodeController,
@@ -81,15 +83,15 @@ class EmotesSettingsView extends StatelessWidget {
                       minLines: 1,
                       maxLines: 1,
                       decoration: InputDecoration(
-                        hintText: L10n.of(context)!.emoteShortcode,
+                        hintText: L10n.of(context).emoteShortcode,
                         prefixText: ': ',
                         suffixText: ':',
                         prefixStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
+                          color: theme.colorScheme.secondary,
                           fontWeight: FontWeight.bold,
                         ),
                         suffixStyle: TextStyle(
-                          color: Theme.of(context).colorScheme.secondary,
+                          color: theme.colorScheme.secondary,
                           fontWeight: FontWeight.bold,
                         ),
                         border: InputBorder.none,
@@ -112,7 +114,7 @@ class EmotesSettingsView extends StatelessWidget {
               ),
             if (controller.room != null)
               SwitchListTile.adaptive(
-                title: Text(L10n.of(context)!.enableEmotesGlobally),
+                title: Text(L10n.of(context).enableEmotesGlobally),
                 value: controller.isGloballyActive(client),
                 onChanged: controller.setIsGloballyActive,
               ),
@@ -123,7 +125,7 @@ class EmotesSettingsView extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Text(
-                        L10n.of(context)!.noEmotesFound,
+                        L10n.of(context).noEmotesFound,
                         style: const TextStyle(fontSize: 20),
                       ),
                     ),
@@ -152,7 +154,7 @@ class EmotesSettingsView extends StatelessWidget {
                           decoration: BoxDecoration(
                             borderRadius:
                                 const BorderRadius.all(Radius.circular(10)),
-                            color: Theme.of(context).secondaryHeaderColor,
+                            color: theme.secondaryHeaderColor,
                           ),
                           child: Shortcuts(
                             shortcuts: !useShortCuts
@@ -184,17 +186,15 @@ class EmotesSettingsView extends StatelessWidget {
                                 minLines: 1,
                                 maxLines: 1,
                                 decoration: InputDecoration(
-                                  hintText: L10n.of(context)!.emoteShortcode,
+                                  hintText: L10n.of(context).emoteShortcode,
                                   prefixText: ': ',
                                   suffixText: ':',
                                   prefixStyle: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
+                                    color: theme.colorScheme.secondary,
                                     fontWeight: FontWeight.bold,
                                   ),
                                   suffixStyle: TextStyle(
-                                    color:
-                                        Theme.of(context).colorScheme.secondary,
+                                    color: theme.colorScheme.secondary,
                                     fontWeight: FontWeight.bold,
                                   ),
                                   border: InputBorder.none,
@@ -247,6 +247,7 @@ class _EmoteImage extends StatelessWidget {
         fit: BoxFit.contain,
         width: size,
         height: size,
+        isThumbnail: false,
       ),
     );
   }
@@ -269,7 +270,7 @@ class _ImagePickerState extends State<_ImagePicker> {
     if (widget.controller.value == null) {
       return ElevatedButton(
         onPressed: () => widget.onPressed(widget.controller),
-        child: Text(L10n.of(context)!.pickImage),
+        child: Text(L10n.of(context).pickImage),
       );
     } else {
       return _EmoteImage(widget.controller.value!.url);

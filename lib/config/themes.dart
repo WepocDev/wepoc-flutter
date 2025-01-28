@@ -67,6 +67,7 @@ abstract class FluffyThemes {
       brightness: brightness,
       seedColor: seed ?? AppConfig.colorSchemeSeed ?? AppConfig.primaryColor,
     );
+    final isColumnMode = FluffyThemes.isColumnMode(context);
     return ThemeData(
       visualDensity: VisualDensity.standard,
       useMaterial3: true,
@@ -77,9 +78,7 @@ abstract class FluffyThemes {
               ? Typography.material2018().black.merge(fallbackTextTheme)
               : Typography.material2018().white.merge(fallbackTextTheme)
           : null,
-      dividerColor: brightness == Brightness.light
-          ? Colors.blueGrey.shade50
-          : Colors.blueGrey.shade900,
+      dividerColor: colorScheme.surfaceContainer,
       popupMenuTheme: PopupMenuThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppConfig.borderRadius),
@@ -91,34 +90,23 @@ abstract class FluffyThemes {
       ),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
-          borderSide: BorderSide.none,
-          borderRadius: BorderRadius.circular(AppConfig.borderRadius / 2),
+          borderRadius: BorderRadius.circular(AppConfig.borderRadius),
         ),
         contentPadding: const EdgeInsets.all(12),
-        filled: true,
+        filled: false,
       ),
       appBarTheme: AppBarTheme(
-        toolbarHeight: FluffyThemes.isColumnMode(context) ? 72 : 56,
-        shadowColor: FluffyThemes.isColumnMode(context)
-            ? Colors.grey.withAlpha(64)
-            : null,
-        surfaceTintColor:
-            FluffyThemes.isColumnMode(context) ? colorScheme.surface : null,
-        backgroundColor:
-            FluffyThemes.isColumnMode(context) ? colorScheme.surface : null,
+        toolbarHeight: isColumnMode ? 72 : 56,
+        shadowColor:
+            isColumnMode ? colorScheme.surfaceContainer.withAlpha(128) : null,
+        surfaceTintColor: isColumnMode ? colorScheme.surface : null,
+        backgroundColor: isColumnMode ? colorScheme.surface : null,
         systemOverlayStyle: SystemUiOverlayStyle(
           statusBarColor: Colors.transparent,
           statusBarIconBrightness: brightness.reversed,
           statusBarBrightness: brightness,
           systemNavigationBarIconBrightness: brightness.reversed,
           systemNavigationBarColor: colorScheme.surface,
-        ),
-      ),
-      textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppConfig.borderRadius / 2),
-          ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -133,10 +121,9 @@ abstract class FluffyThemes {
           ),
         ),
       ),
-      dialogTheme: DialogTheme(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppConfig.borderRadius / 2),
-        ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        width: isColumnMode ? null : FluffyThemes.columnWidth * 1.5,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
@@ -145,9 +132,6 @@ abstract class FluffyThemes {
           elevation: 0,
           padding: const EdgeInsets.all(16),
           textStyle: const TextStyle(fontSize: 16),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(AppConfig.borderRadius),
-          ),
         ),
       ),
     );

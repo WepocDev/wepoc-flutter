@@ -30,8 +30,8 @@ class ChatEmojiPicker extends StatelessWidget {
                 children: [
                   TabBar(
                     tabs: [
-                      Tab(text: L10n.of(context)!.emojis),
-                      Tab(text: L10n.of(context)!.stickers),
+                      Tab(text: L10n.of(context).emojis),
+                      Tab(text: L10n.of(context).stickers),
                     ],
                   ),
                   Expanded(
@@ -43,9 +43,8 @@ class ChatEmojiPicker extends StatelessWidget {
                           config: Config(
                             emojiViewConfig: EmojiViewConfig(
                               noRecents: const NoRecent(),
-                              backgroundColor: Theme.of(context)
-                                  .colorScheme
-                                  .onInverseSurface,
+                              backgroundColor:
+                                  theme.colorScheme.onInverseSurface,
                             ),
                             bottomActionBarConfig: const BottomActionBarConfig(
                               enabled: false,
@@ -53,7 +52,7 @@ class ChatEmojiPicker extends StatelessWidget {
                             categoryViewConfig: CategoryViewConfig(
                               backspaceColor: theme.colorScheme.primary,
                               iconColor:
-                                  theme.colorScheme.primary.withOpacity(0.5),
+                                  theme.colorScheme.primary.withAlpha(128),
                               iconColorSelected: theme.colorScheme.primary,
                               indicatorColor: theme.colorScheme.primary,
                             ),
@@ -98,7 +97,7 @@ class NoRecent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Text(
-      L10n.of(context)!.emoteKeyboardNoRecents,
+      L10n.of(context).emoteKeyboardNoRecents,
       style: Theme.of(context).textTheme.bodyLarge,
     );
   }

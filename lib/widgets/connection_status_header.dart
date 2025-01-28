@@ -35,6 +35,8 @@ class ConnectionStatusHeaderState extends State<ConnectionStatusHeader> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final client = Matrix.of(context).client;
     final status = client.onSyncStatus.value ??
         const SyncStatusUpdate(SyncStatus.waitingForResponse);
@@ -65,7 +67,7 @@ class ConnectionStatusHeaderState extends State<ConnectionStatusHeader> {
             status.toLocalizedString(context),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+            style: TextStyle(color: theme.colorScheme.onSurface),
           ),
         ],
       ),
@@ -77,15 +79,14 @@ extension on SyncStatusUpdate {
   String toLocalizedString(BuildContext context) {
     switch (status) {
       case SyncStatus.waitingForResponse:
-        return L10n.of(context)!.loadingPleaseWait;
+        return L10n.of(context).loadingPleaseWait;
       case SyncStatus.error:
         return ((error?.exception ?? Object()) as Object)
             .toLocalizedString(context);
       case SyncStatus.processing:
       case SyncStatus.cleaningUp:
       case SyncStatus.finished:
-      default:
-        return L10n.of(context)!.synchronizingPleaseWait;
+        return L10n.of(context).synchronizingPleaseWait;
     }
   }
 }

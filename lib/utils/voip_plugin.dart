@@ -36,7 +36,6 @@ class VoipPlugin with WidgetsBindingObserver implements WebRTCDelegate {
   void didChangeAppLifecycleState(AppLifecycleState? state) {
     background = (state == AppLifecycleState.detached ||
         state == AppLifecycleState.paused);
-    Logs().w('Set background mode in VOIP plugin', background);
   }
 
   void addCallingOverlay(String callId, CallSession call) {
@@ -196,4 +195,10 @@ class VoipPlugin with WidgetsBindingObserver implements WebRTCDelegate {
   @override
   // TODO: implement keyProvider
   EncryptionKeyProvider? get keyProvider => throw UnimplementedError();
+
+  @override
+  Future<void> registerListeners(CallSession session) {
+    // TODO: implement registerListeners
+    throw UnimplementedError();
+  }
 }
