@@ -457,6 +457,7 @@ class ChatListController extends State<ChatList>
   void _showSubscriptionDialog(BuildContext context) {
     showDialog(
       context: context,
+      barrierDismissible: false,
       builder: (BuildContext _ctx) {
         return AlertDialog(
           title: const Text("Subscription Required"),
