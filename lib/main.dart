@@ -26,16 +26,19 @@ void main() async {
   // widget bindings are initialized already.
   WidgetsFlutterBinding.ensureInitialized();
 
+  print("AAAAA ${dotenv.env['REVENUE_CAT_ANDROID_KEY']!}");
+
   try {
     PurchasesConfiguration? configuration;
     if (Platform.isAndroid) {
       configuration = PurchasesConfiguration(
-          dotenv.env['REVENUE_CAT_IOS_KEY']!); // NEED ANDROID API KEY
+          dotenv.env['REVENUE_CAT_ANDROID_KEY']!); // NEED ANDROID API KEY
     } else if (Platform.isIOS) {
       configuration =
           PurchasesConfiguration(dotenv.env['REVENUE_CAT_IOS_KEY']!);
     }
 
+    print("Config $configuration");
     if (configuration != null) {
       await Purchases.setDebugLogsEnabled(true);
       configuration.usesStoreKit2IfAvailable = false;
