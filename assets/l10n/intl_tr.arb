@@ -2271,7 +2271,7 @@
   "@noBackupWarning": {},
   "noOtherDevicesFound": "Başka aygıt bulunamadı",
   "@noOtherDevicesFound": {},
-  "fileIsTooBigForServer": "Sunucu, dosyanın gönderilemeyecek kadar büyük olduğunu bildiriyor.",
+  "fileIsTooBigForServer": "Gönderilemiyor! Sunucu yalnızca {max} değerine kadar olan ekleri destekliyor.",
   "@fileIsTooBigForServer": {},
   "fileHasBeenSavedAt": "Dosya {path} konumuna kaydedildi",
   "@fileHasBeenSavedAt": {
@@ -2772,5 +2772,123 @@
   "changeGeneralChatSettings": "Genel sohbet ayarlarını değiştir",
   "@changeGeneralChatSettings": {},
   "changeTheVisibilityOfChatHistory": "Sohbet geçmişinin görünürlüğünü değiştir",
-  "@changeTheVisibilityOfChatHistory": {}
+  "@changeTheVisibilityOfChatHistory": {},
+  "invitedBy": "📩 {user} davet etti",
+  "@invitedBy": {
+    "placeholders": {
+      "user": {}
+    }
+  },
+  "chatPermissionsDescription": "Bu sohbette belirli eylemler için hangi güç düzeyinin gerekli olduğunu tanımlayın. 0, 50 ve 100 güç düzeyleri genellikle kullanıcıları, moderatörleri ve yöneticileri temsil eder, ancak herhangi bir derecelendirme mümkündür.",
+  "@chatPermissionsDescription": {},
+  "changelog": "Değişiklik günlüğü",
+  "@changelog": {},
+  "updateInstalled": "🎉 Güncelleme {version} kuruldu!",
+  "@updateInstalled": {
+    "type": "text",
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "sendCanceled": "Gönderme iptal edildi",
+  "@sendCanceled": {},
+  "noChatsFoundHere": "Burada henüz sohbet bulunamadı. Aşağıdaki düğmeyi kullanarak biriyle yeni bir sohbet başlatın. ⤵️",
+  "@noChatsFoundHere": {},
+  "loginWithMatrixId": "Matrix kimliği ile oturum aç",
+  "@loginWithMatrixId": {},
+  "discoverHomeservers": "Ana sunucuları keşfet",
+  "@discoverHomeservers": {},
+  "whatIsAHomeserver": "Ana sunucu nedir?",
+  "@whatIsAHomeserver": {},
+  "homeserverDescription": "Tüm verileriniz tıpkı bir e-posta sağlayıcısı gibi ana sunucuda saklanır. Hangi ana sunucuyu kullanmak istediğinizi seçebilir ve herkesle iletişim kurmaya devam edebilirsiniz. https://matrix.org adresinden daha fazla bilgi edinin.",
+  "@homeserverDescription": {},
+  "doesNotSeemToBeAValidHomeserver": "Uyumlu bir ana sunucu gibi görünmüyor. Yanlış URL mi?",
+  "@doesNotSeemToBeAValidHomeserver": {},
+  "prepareSendingAttachment": "Ek gönderilmeye hazırlanıyor...",
+  "@prepareSendingAttachment": {},
+  "serverLimitReached": "Sunucu sınırına ulaşıldı! {seconds} saniye bekleniyor...",
+  "@serverLimitReached": {
+    "type": "integer",
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "calculatingFileSize": "Dosya boyutu hesaplanıyor...",
+  "@calculatingFileSize": {},
+  "sendingAttachmentCountOfCount": "Ek {index} / {length} gönderiliyor...",
+  "@sendingAttachmentCountOfCount": {
+    "type": "integer",
+    "placeholders": {
+      "index": {},
+      "length": {}
+    }
+  },
+  "sendingAttachment": "Ek gönderiliyor...",
+  "@sendingAttachment": {},
+  "generatingVideoThumbnail": "Video küçük resmi oluşturuluyor...",
+  "@generatingVideoThumbnail": {},
+  "compressVideo": "Video sıkıştırılıyor...",
+  "@compressVideo": {},
+  "oneOfYourDevicesIsNotVerified": "Aygıtlarınızdan biri doğrulanmadı",
+  "@oneOfYourDevicesIsNotVerified": {},
+  "noticeChatBackupDeviceVerification": "Not: Tüm aygıtlarınızı sohbet yedeklemesine bağladığınızda, otomatik olarak doğrulanırlar.",
+  "@noticeChatBackupDeviceVerification": {},
+  "blur": "Blur:",
+  "@blur": {},
+  "opacity": "Şeffaflık:",
+  "@opacity": {},
+  "setWallpaper": "Duvar kağıdı seç",
+  "@setWallpaper": {},
+  "manageAccount": "Hesabı yönet",
+  "@manageAccount": {},
+  "noContactInformationProvided": "Sunucu geçerli bir iletişim bilgisi sunmadı",
+  "@noContactInformationProvided": {},
+  "contactServerAdmin": "Sunucu yöneticisiyle iletişime geçin",
+  "@contactServerAdmin": {},
+  "contactServerSecurity": "Sunucu güvenliğiyle iletişime geçin",
+  "@contactServerSecurity": {},
+  "supportPage": "Destek sayfası",
+  "@supportPage": {},
+  "name": "İsim",
+  "@name": {},
+  "version": "Versiyon",
+  "@version": {},
+  "serverInformation": "Sunucu bilgisi:",
+  "@serverInformation": {},
+  "website": "Web sitesi",
+  "@website": {},
+  "compress": "Sıkıştırma",
+  "@compress": {},
+  "boldText": "Kalın metin",
+  "@boldText": {},
+  "italicText": "İtalik metin",
+  "@italicText": {},
+  "strikeThrough": "Üstü çizili",
+  "@strikeThrough": {},
+  "pleaseFillOut": "Lütfen doldurun",
+  "@pleaseFillOut": {},
+  "aboutHomeserver": "{homeserver} Hakkında",
+  "@aboutHomeserver": {
+    "type": "text",
+    "placeholders": {
+      "homeserver": {}
+    }
+  },
+  "invalidUrl": "Geçersiz url",
+  "@invalidUrl": {},
+  "addLink": "Link ekle",
+  "@addLink": {},
+  "unableToJoinChat": "Sohbete girilemiyor. Belki başka birileri konuşmayı kapatmış olabilir.",
+  "@unableToJoinChat": {},
+  "continueText": "Devam et",
+  "@continueText": {},
+  "sendImages": "{count} görsel gönder",
+  "@sendImages": {
+    "type": "text",
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "welcomeText": "Hey Hey 👋 Karşınızda FluffyChat. https://matrix.org ile uyumlu herhangi bir homeserver'a giriş yapabilirsiniz. Ve herkesle konuşabilirsiniz. Bu koca bir merkeziyetsiz mesajlaşma ağı!",
+  "@welcomeText": {}
 }

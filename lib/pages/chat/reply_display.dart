@@ -14,6 +14,8 @@ class ReplyDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return AnimatedContainer(
       duration: FluffyThemes.animationDuration,
       curve: FluffyThemes.animationCurve,
@@ -22,12 +24,12 @@ class ReplyDisplay extends StatelessWidget {
           : 0,
       clipBehavior: Clip.hardEdge,
       decoration: BoxDecoration(
-        color: Theme.of(context).colorScheme.onInverseSurface,
+        color: theme.colorScheme.onInverseSurface,
       ),
       child: Row(
         children: <Widget>[
           IconButton(
-            tooltip: L10n.of(context)!.close,
+            tooltip: L10n.of(context).close,
             icon: const Icon(Icons.close),
             onPressed: controller.cancelReplyEventAction,
           ),
@@ -55,6 +57,7 @@ class _EditContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final event = this.event;
     if (event == null) {
       return const SizedBox.shrink();
@@ -63,19 +66,19 @@ class _EditContent extends StatelessWidget {
       children: <Widget>[
         Icon(
           Icons.edit,
-          color: Theme.of(context).colorScheme.primary,
+          color: theme.colorScheme.primary,
         ),
         Container(width: 15.0),
         Text(
           event.calcLocalizedBodyFallback(
-            MatrixLocals(L10n.of(context)!),
+            MatrixLocals(L10n.of(context)),
             withSenderNamePrefix: false,
             hideReply: true,
           ),
           overflow: TextOverflow.ellipsis,
           maxLines: 1,
           style: TextStyle(
-            color: Theme.of(context).textTheme.bodyMedium!.color,
+            color: theme.textTheme.bodyMedium!.color,
           ),
         ),
       ],

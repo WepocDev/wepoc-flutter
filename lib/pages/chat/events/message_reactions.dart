@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:collection/collection.dart' show IterableExtension;
-import 'package:future_loading_dialog/future_loading_dialog.dart';
 import 'package:matrix/matrix.dart';
 
 import 'package:fluffychat/config/app_config.dart';
 import 'package:fluffychat/widgets/avatar.dart';
+import 'package:fluffychat/widgets/future_loading_dialog.dart';
 import 'package:fluffychat/widgets/matrix.dart';
 import 'package:fluffychat/widgets/mxc_image.dart';
 
@@ -108,10 +108,10 @@ class _Reaction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = Theme.of(context).brightness == Brightness.dark
-        ? Colors.white
-        : Colors.black;
-    final color = Theme.of(context).colorScheme.surface;
+    final theme = Theme.of(context);
+    final textColor =
+        theme.brightness == Brightness.dark ? Colors.white : Colors.black;
+    final color = theme.colorScheme.surface;
     Widget content;
     if (reactionKey.startsWith('mxc://')) {
       content = Row(
@@ -122,6 +122,7 @@ class _Reaction extends StatelessWidget {
             width: 20,
             height: 20,
             animated: false,
+            isThumbnail: false,
           ),
           if (count > 1) ...[
             const SizedBox(width: 4),
@@ -158,8 +159,8 @@ class _Reaction extends StatelessWidget {
           border: Border.all(
             width: 1,
             color: reacted!
-                ? Theme.of(context).colorScheme.primary
-                : Theme.of(context).colorScheme.primaryContainer,
+                ? theme.colorScheme.primary
+                : theme.colorScheme.primaryContainer,
           ),
           borderRadius: BorderRadius.circular(AppConfig.borderRadius / 2),
         ),

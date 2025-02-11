@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:flutter_gen/gen_l10n/l10n.dart';
-import 'package:future_loading_dialog/future_loading_dialog.dart';
 import 'package:matrix/matrix.dart';
 
 import 'package:fluffychat/widgets/avatar.dart';
+import 'package:fluffychat/widgets/future_loading_dialog.dart';
 import 'package:fluffychat/widgets/layouts/max_width_body.dart';
 import '../../widgets/matrix.dart';
 import 'settings_ignore_list.dart';
@@ -16,11 +16,13 @@ class SettingsIgnoreListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     final client = Matrix.of(context).client;
     return Scaffold(
       appBar: AppBar(
         leading: const Center(child: BackButton()),
-        title: Text(L10n.of(context)!.blockedUsers),
+        title: Text(L10n.of(context).blockedUsers),
       ),
       body: MaxWidthBody(
         withScrolling: false,
@@ -41,24 +43,24 @@ class SettingsIgnoreListView extends StatelessWidget {
                       errorText: controller.errorText,
                       hintText: '@bad_guy:domain.abc',
                       floatingLabelBehavior: FloatingLabelBehavior.always,
-                      labelText: L10n.of(context)!.blockUsername,
+                      labelText: L10n.of(context).blockUsername,
                       suffixIcon: IconButton(
-                        tooltip: L10n.of(context)!.block,
-                        icon: const Icon(Icons.send_outlined),
+                        tooltip: L10n.of(context).block,
+                        icon: const Icon(Icons.add),
                         onPressed: () => controller.ignoreUser(context),
                       ),
                     ),
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    L10n.of(context)!.blockListDescription,
+                    L10n.of(context).blockListDescription,
                     style: const TextStyle(color: Colors.orange),
                   ),
                 ],
               ),
             ),
             Divider(
-              color: Theme.of(context).dividerColor,
+              color: theme.dividerColor,
             ),
             Expanded(
               child: StreamBuilder<Object>(
@@ -87,7 +89,7 @@ class SettingsIgnoreListView extends StatelessWidget {
                         subtitle:
                             Text(s.data?.userId ?? client.ignoredUsers[i]),
                         trailing: IconButton(
-                          tooltip: L10n.of(context)!.delete,
+                          tooltip: L10n.of(context).delete,
                           icon: const Icon(Icons.delete_outlined),
                           onPressed: () => showFutureLoadingDialog(
                             context: context,

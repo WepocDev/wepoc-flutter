@@ -1,11 +1,12 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
-import 'package:http/http.dart' as http;
 import 'package:matrix/matrix.dart';
 
 import 'package:fluffychat/config/themes.dart';
+import 'package:fluffychat/utils/client_download_content_extension.dart';
 import 'package:fluffychat/utils/matrix_sdk_extensions/matrix_file_extension.dart';
 import 'package:fluffychat/widgets/matrix.dart';
 
@@ -63,10 +64,9 @@ class _MxcImageState extends State<MxcImage> {
         : _imageDataCache[cacheKey] = data;
   }
 
-  bool? _isCached;
-
   Future<void> _load() async {
-    final client = widget.client ?? Matrix.of(context).client;
+    final client =
+        widget.client ?? widget.event?.room.client ?? Matrix.of(context).client;
     final uri = widget.uri;
     final event = widget.event;
 
@@ -77,45 +77,18 @@ class _MxcImageState extends State<MxcImage> {
       final height = widget.height;
       final realHeight = height == null ? null : height * devicePixelRatio;
 
-      final httpUri = widget.isThumbnail
-          ? uri.getThumbnail(
-              client,
-              width: realWidth,
-              height: realHeight,
-              animated: widget.animated,
-              method: widget.thumbnailMethod,
-            )
-          : uri.getDownloadLink(client);
-
-      final storeKey = widget.isThumbnail ? httpUri : uri;
-
-      if (_isCached == null) {
-        final cachedData = await client.database?.getFile(storeKey);
-        if (cachedData != null) {
-          if (!mounted) return;
-          setState(() {
-            _imageData = cachedData;
-            _isCached = true;
-          });
-          return;
-        }
-        _isCached = false;
-      }
-
-      final response = await http.get(httpUri);
-      if (response.statusCode != 200) {
-        if (response.statusCode == 404) {
-          return;
-        }
-        throw Exception();
-      }
-      final remoteData = response.bodyBytes;
-
+      final remoteData = await client.downloadMxcCached(
+        uri,
+        width: realWidth,
+        height: realHeight,
+        thumbnailMethod: widget.thumbnailMethod,
+        isThumbnail: widget.isThumbnail,
+        animated: widget.animated,
+      );
       if (!mounted) return;
       setState(() {
         _imageData = remoteData;
       });
-      await client.database?.storeFile(storeKey, remoteData, 0);
     }
 
     if (event != null) {
@@ -138,7 +111,7 @@ class _MxcImageState extends State<MxcImage> {
     }
     try {
       await _load();
-    } catch (_) {
+    } on IOException catch (_) {
       if (!mounted) return;
       await Future.delayed(widget.retryDuration);
       _tryLoad(_);
@@ -168,7 +141,7 @@ class _MxcImageState extends State<MxcImage> {
     return AnimatedCrossFade(
       crossFadeState:
           hasData ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-      duration: FluffyThemes.animationDuration,
+      duration: const Duration(milliseconds: 128),
       firstChild: placeholder(context),
       secondChild: hasData
           ? Image.memory(
@@ -179,7 +152,6 @@ class _MxcImageState extends State<MxcImage> {
               filterQuality:
                   widget.isThumbnail ? FilterQuality.low : FilterQuality.medium,
               errorBuilder: (context, __, ___) {
-                _isCached = false;
                 _imageData = null;
                 WidgetsBinding.instance.addPostFrameCallback(_tryLoad);
                 return placeholder(context);

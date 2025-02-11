@@ -18,29 +18,13 @@ abstract class UpdateNotifier {
 
     if (currentVersion != storedVersion) {
       if (storedVersion != null) {
-        ScaffoldFeatureController? controller;
-        controller = scaffoldMessenger.showSnackBar(
+        scaffoldMessenger.showSnackBar(
           SnackBar(
             duration: const Duration(seconds: 30),
-            content: Row(
-              children: [
-                IconButton(
-                  icon: Icon(
-                    Icons.close_outlined,
-                    size: 20,
-                    color: Theme.of(context).colorScheme.onPrimary,
-                  ),
-                  onPressed: () => controller?.close(),
-                ),
-                Expanded(
-                  child: Text(
-                    L10n.of(context)!.updateInstalled(currentVersion),
-                  ),
-                ),
-              ],
-            ),
+            showCloseIcon: true,
+            content: Text(L10n.of(context).updateInstalled(currentVersion)),
             action: SnackBarAction(
-              label: L10n.of(context)!.changelog,
+              label: L10n.of(context).changelog,
               onPressed: () => launchUrlString(AppConfig.changelogUrl),
             ),
           ),
