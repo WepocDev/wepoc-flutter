@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 
@@ -22,6 +23,10 @@ class LoginView extends StatelessWidget {
         ? Theme.of(context).colorScheme.surface
         // ignore: deprecated_member_use
         : Theme.of(context).colorScheme.surfaceVariant;
+
+    final matrixContext = Matrix.of(context).client;
+
+    print("Hola $matrixContext");
 
     return LoginScaffold(
       enforceMobileMode: Matrix.of(context).client.isLogged(),
@@ -117,19 +122,19 @@ class LoginView extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: TextButton.icon(
-                    onPressed: controller.loading
-                        ? () {}
-                        : controller.passwordForgotten,
-                    style: TextButton.styleFrom(
-                      foregroundColor: Theme.of(context).colorScheme.error,
-                    ),
-                    icon: const Icon(Icons.safety_check_outlined),
-                    label: Text(L10n.of(context)!.passwordForgotten),
-                  ),
-                ),
+                // Padding(
+                //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                //   child: TextButton.icon(
+                //     onPressed: controller.loading
+                //         ? () {}
+                //         : controller.passwordForgotten,
+                //     style: TextButton.styleFrom(
+                //       foregroundColor: Theme.of(context).colorScheme.error,
+                //     ),
+                //     icon: const Icon(Icons.safety_check_outlined),
+                //     label: Text(L10n.of(context)!.passwordForgotten),
+                //   ),
+                // ),
                 const SizedBox(height: 16),
               ],
             ),

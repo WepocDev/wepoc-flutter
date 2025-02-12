@@ -1,7 +1,9 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:matrix/matrix.dart';
@@ -16,15 +18,14 @@ import 'package:fluffychat/widgets/error_widget.dart';
 import 'config/setting_keys.dart';
 import 'utils/background_push.dart';
 import 'widgets/fluffy_chat_app.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 
-void main() async {
+Future<void> main() async {
   Logs().i('Welcome to ${AppConfig.applicationName} <3');
-  await dotenv.load(fileName: ".env");
 
-  // Our background push shared isolate accesses flutter-internal things very early in the startup proccess
-  // To make sure that the parts of flutter needed are started up already, we need to ensure that the
-  // widget bindings are initialized already.
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  await dotenv.load(fileName: ".env");
 
   print("AAAAA ${dotenv.env['REVENUE_CAT_ANDROID_KEY']!}");
 

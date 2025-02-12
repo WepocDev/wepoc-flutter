@@ -11,6 +11,7 @@
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		4AA665932CA37736001DD406 /* dev.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 4AA665922CA37736001DD406 /* dev.storekit */; };
 		4ABF61052CA13D99001968F5 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4ABF61042CA13D99001968F5 /* StoreKit.framework */; };
+		5F34ECE7C7FFE8BA8999942C /* Pods_FluffyChat_Share.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C9EB6E6475A19949A37A2634 /* Pods_FluffyChat_Share.framework */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
@@ -105,7 +106,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				609046320A2D7D2B0D36583B /* Pods_FluffyChat_Share.framework in Frameworks */,
+				5F34ECE7C7FFE8BA8999942C /* Pods_FluffyChat_Share.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

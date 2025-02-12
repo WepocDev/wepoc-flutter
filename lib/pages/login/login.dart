@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart' as FirebaseLibrary;
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_gen/gen_l10n/l10n.dart';
@@ -28,10 +30,58 @@ class LoginController extends State<Login> {
   bool loading = false;
   bool showPassword = false;
 
+  @override
+  void initState() {
+    super.initState();
+
+    FirebaseLibrary.FirebaseAuth.instance
+      .userChanges()
+      .listen((FirebaseLibrary.User? user) {
+        if (user == null) {
+          print('User is currently signed out!');
+        } else {
+          print('User is signed in!');
+        }
+      });
+
+    WidgetsBinding.instance.addPostFrameCallback(_onAfterBuild);
+  }
+
+  void _onAfterBuild(Duration ts) async {
+    print("login._onAfterBuild");
+    // Check if you received the link via `getInitialLink` first
+    final initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
+
+    if (initialLink != null) {
+      final Uri deepLink = initialLink.link;
+      // Example of using the dynamic link to push the user to a different screen
+      Navigator.pushNamed(context, deepLink.path);
+    }
+  }
+
   void toggleShowPassword() =>
       setState(() => showPassword = !loading && !showPassword);
 
   void login() async {
+    print("Login.login");
+    print(FirebaseLibrary.FirebaseAuth.instance.app.options);
+    final acs = FirebaseLibrary.ActionCodeSettings(
+      url: 'chat.wepoc://login', // Deep Link en lugar de Firebase Dynamic Link
+      handleCodeInApp: true,
+      iOSBundleId: 'chat.wepoc2.app',
+      androidPackageName: 'chat.wepoc.app',
+      androidInstallApp: true,
+      androidMinimumVersion: '12',
+    );
+
+    final emailAuth = 'scb9908@gmail.com';
+    FirebaseLibrary.FirebaseAuth.instance.sendSignInLinkToEmail(
+            email: emailAuth, actionCodeSettings: acs)
+        .catchError((onError) => print('Error sending email verification $onError'))
+        .then((value) => print('Successfully sent email verification'));
+
+    return;
+
     final matrix = Matrix.of(context);
     if (usernameController.text.isEmpty) {
       setState(() => usernameError = L10n.of(context).pleaseEnterYourUsername);

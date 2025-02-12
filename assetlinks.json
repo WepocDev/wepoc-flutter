@@ -1,0 +1,10 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "chat.wepoc.app",
+      "sha256_cert_fingerprints": ["E6:ED:5A:7C:D0:00:BE:B0:F2:67:17:24:12:69:8A:89:2E:3F:60:8D:1A:AD:59:17:29:37:2E:9F:64:BB:96:75"]
+    }
+  }
+]

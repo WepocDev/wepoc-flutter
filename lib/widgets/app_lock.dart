@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -40,6 +42,23 @@ class AppLock extends State<AppLockWidget> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback(_checkLoggedIn);
+    checkDeepLink();
+  }
+
+  void checkDeepLink() async {
+    final PendingDynamicLinkData? initialLink = await FirebaseDynamicLinks.instance.getInitialLink();
+
+    if (initialLink?.link.toString() == 'chat.wepoc://login') {
+      String email = 'scb9908@gmail.com'; // O recuperar del almacenamiento local
+      if (FirebaseAuth.instance.isSignInWithEmailLink(initialLink!.link.toString())) {
+        try {
+          await FirebaseAuth.instance.signInWithEmailLink(email: email, emailLink: initialLink.link.toString());
+          print("User signed in successfully!");
+        } catch (e) {
+          print("Error signing in: $e");
+        }
+      }
+    }
   }
 
   void _checkLoggedIn(_) async {
