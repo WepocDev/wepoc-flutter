@@ -10,7 +10,7 @@ import 'package:flutter_shortcuts/flutter_shortcuts.dart';
 import 'package:go_router/go_router.dart';
 import 'package:matrix/matrix.dart' as sdk;
 import 'package:matrix/matrix.dart';
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+// import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:uni_links/uni_links.dart';
 
 import 'package:fluffychat/config/app_config.dart';
@@ -356,74 +356,9 @@ class ChatListController extends State<ChatList>
 
   String? get activeChat => widget.activeChat;
 
-  void _processIncomingSharedMedia(List<SharedMediaFile> files) {
-    if (files.isEmpty) return;
-
-    showScaffoldDialog(
-      context: context,
-      builder: (context) => ShareScaffoldDialog(
-        items: files.map(
-          (file) {
-            if ({
-              SharedMediaType.text,
-              SharedMediaType.url,
-            }.contains(file.type)) {
-              return TextShareItem(file.path);
-            }
-            return FileShareItem(
-              XFile(
-                file.path.replaceFirst('file://', ''),
-                mimeType: file.mimeType,
-              ),
-            );
-          },
-        ).toList(),
-      ),
-    );
-  }
-
-  void _processIncomingUris(String? text) async {
-    if (text == null) return;
-    context.go('/rooms');
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      UrlLauncher(context, text).openMatrixToUrl();
-    });
-  }
-
-  void _initReceiveSharingIntent() {
-    if (!PlatformInfos.isMobile) return;
-
-    // For sharing images coming from outside the app while the app is in the memory
-    _intentFileStreamSubscription = ReceiveSharingIntent.instance
-        .getMediaStream()
-        .listen(_processIncomingSharedMedia, onError: print);
-
-    // For sharing images coming from outside the app while the app is closed
-    ReceiveSharingIntent.instance
-        .getInitialMedia()
-        .then(_processIncomingSharedMedia);
-
-    // For receiving shared Uris
-    _intentUriStreamSubscription = linkStream.listen(_processIncomingUris);
-    if (FluffyChatApp.gotInitialLink == false) {
-      FluffyChatApp.gotInitialLink = true;
-      getInitialLink().then(_processIncomingUris);
-    }
-
-    if (PlatformInfos.isAndroid) {
-      final shortcuts = FlutterShortcuts();
-      shortcuts.initialize().then(
-            (_) => shortcuts.listenAction((action) {
-              if (!mounted) return;
-              UrlLauncher(context, action).launchUrl();
-            }),
-          );
-    }
-  }
-
   @override
   void initState() {
-    _initReceiveSharingIntent();
+    // _initReceiveSharingIntent();
 
     scrollController.addListener(_onScroll);
     _waitForFirstSync();
